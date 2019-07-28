@@ -34,7 +34,9 @@ module.exports = (app, nextMain) => {
     const validPassword = await bcrypt.compare(req.body.password, user.password);
     if (!validPassword) return next(401);
 
-    resp.send('inicie sesion');
+    // crear y asignar un token al usuario
+    const token = jwt.sign({ _id: user._id }, secret);
+    resp.send(token);
   });
 
   return nextMain();
