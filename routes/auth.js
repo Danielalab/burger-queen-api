@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const bcrypt = require('bcrypt');
 const db = require('../mongodb');
 
 const { secret } = config;
@@ -27,10 +28,13 @@ module.exports = (app, nextMain) => {
     // TODO: autenticar a la usuarix
     
     // verificar que existe en el usuario en la DB
-    const emailExist = await (await db()).collection('users').findOne({ email: req.body.email });
-    if (emailExist) return next(401);
-    // verificar que la contraseña coincida con el email
+    const user = await (await db()).collection('users').findOne({ email: req.body.email });
+    if (!user) return next(401);
+    // verificar que la contraseña sea correcta
+    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    if (!validPassword) return next(401);
 
+    resp.send('inicie sesion');
   });
 
   return nextMain();
