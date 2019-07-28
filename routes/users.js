@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const db = require('../mongodb');
 
 const {
   requireAuth,
@@ -6,7 +7,7 @@ const {
 } = require('../middleware/auth');
 
 
-const initAdminUser = (app, next) => {
+const initAdminUser = async (app, next) => {
   const { adminEmail, adminPassword } = app.get('config');
   if (!adminEmail || !adminPassword) {
     return next();
@@ -19,6 +20,12 @@ const initAdminUser = (app, next) => {
   };
 
   // TODO: crear usuaria admin
+  const collectionUser = (await db()).collection('users');
+  const adminExist = await collectionUser.findOne({ email: adminEmail });
+  if (!adminExist) {
+    await collectionUser.insertOne(adminUser);
+  }
+  return next();
 };
 
 
