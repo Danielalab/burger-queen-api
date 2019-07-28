@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
+const db = require('../mongodb');
+const { ObjectId } = require('mongodb');
 
-module.exports = secret => (req, resp, next) => {
+module.exports = secret => async(req, resp, next) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
@@ -13,25 +15,30 @@ module.exports = secret => (req, resp, next) => {
     return next();
   }
 
-  jwt.verify(token, secret, (err, decodedToken) => {
-    if (err) {
-      return next(403);
-    }
-
+  try {
+    const decodedToken = jwt.verify(token, secret);
     // TODO: Verificar identidad del usuario usando `decodeToken.uid`
-  });
+    const userExist = await (await db()).collection('users').findOne({ _id: new ObjectId(decodedToken.uid) });  
+    if (!userExist) {
+      return next(404);
+    }
+    req.headers.authenticatedUser = userExist;
+    next()
+  } catch (error) {
+    return next(403);
+  }
 };
 
 
 module.exports.isAuthenticated = req => (
   // TODO: decidir por la informacion del request si la usuaria esta autenticada
-  false
+  req.headers.authenticatedUser
 );
 
 
 module.exports.isAdmin = req => (
   // TODO: decidir por la informacion del request si la usuaria es admin
-  false
+  req.headers.authenticatedUser.roles.admin
 );
 
 

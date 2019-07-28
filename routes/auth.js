@@ -35,7 +35,7 @@ module.exports = (app, nextMain) => {
     if (!validPassword) return next(401);
 
     // crear y asignar un token al usuario
-    const token = jwt.sign({ _id: user._id }, secret);
+    const token = jwt.sign({ uid: user._id }, secret);
     resp.send(token);
   });
 
