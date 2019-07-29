@@ -6,16 +6,12 @@ const getUsers = (req, resp) => {};
 
 const getUserById = async (req, resp, next) => {
   const { uid } = req.params;
-  try {
-    const collectionUsers = (await db()).collection('users');
-    const { _id, email, roles } = await collectionUsers.findOne({ _id: new ObjectId(uid) });
-    if (!_id && !email) {
-      return next(404);
-    }
-    resp.send({ _id, email, roles });
-  } catch (error) {
-    return next(500);
+  const collectionUsers = (await db()).collection('users');
+  const user = await collectionUsers.findOne({ _id: new ObjectId(uid) });
+  if (!user) {
+    return next(404);
   }
+  resp.send({ _id: user._id, email: user.email, roles: user.roles });
 };
 
 const addUser = async (req, resp, next) => {
@@ -32,7 +28,7 @@ const addUser = async (req, resp, next) => {
     await collectionUsers.insertOne({
       email,
       password: bcrypt.hashSync(password, 10),
-      roles: roles || { admin: false }
+      roles: roles || { admin: false },
     });
     const users = (await collectionUsers.find().toArray())
       .map(({ _id, email, roles }) => ({ _id, email, roles }));
@@ -40,7 +36,6 @@ const addUser = async (req, resp, next) => {
   } catch (error) {
     return next(500);
   }
-
 };
 
 const deletedUser = (req, resp, next) => {};

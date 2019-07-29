@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
-const config = require('../config');
 const bcrypt = require('bcrypt');
-const db = require('../mongodb');
+const config = require('../config');
+const db = require('../connectdb');
 
 const { secret } = config;
 
