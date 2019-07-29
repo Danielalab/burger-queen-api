@@ -1,4 +1,5 @@
 const mongo = require('mongodb').MongoClient;
+
 let db;
 
 module.exports = async (url) => {

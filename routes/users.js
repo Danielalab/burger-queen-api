@@ -1,16 +1,17 @@
 const bcrypt = require('bcrypt');
-const db = require('../mongodb');
+const db = require('../connectdb');
 const {
   getUsers,
   getUserById,
   addUser,
   deletedUser,
-  updateUser
-} = require('../controllers/users')
+  updateUser,
+} = require('../controllers/users');
 
 const {
   requireAuth,
   requireAdmin,
+  requireAdminOrTheUserToConsult,
 } = require('../middleware/auth');
 
 
@@ -98,7 +99,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.get('/users/:uid', requireAuth, getUserById);
+  app.get('/users/:uid', requireAuth, requireAdminOrTheUserToConsult, getUserById);
 
   /**
    * @name POST /users

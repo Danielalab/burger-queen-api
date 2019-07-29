@@ -1,15 +1,15 @@
-const db = require('../mongodb');
-const bcrypt = require('bcrypt');
 const { ObjectId } = require('mongodb');
+const bcrypt = require('bcrypt');
+const db = require('../connectdb');
 
 const getUsers = (req, resp) => {};
 
-const getUserById = (req, resp) => {
+const getUserById = async (req, resp, next) => {
   const { uid } = req.params;
   try {
     const collectionUsers = (await db()).collection('users');
     const { _id, email, roles } = await collectionUsers.findOne({ _id: new ObjectId(uid) });
-    if (!user) {
+    if (!_id && !email) {
       return next(404);
     }
     resp.send({ _id, email, roles });
@@ -52,5 +52,5 @@ module.exports = {
   getUserById,
   addUser,
   deletedUser,
-  updateUser
-}
+  updateUser,
+};

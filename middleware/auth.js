@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
-const db = require('../mongodb');
 const { ObjectId } = require('mongodb');
+const db = require('../connectdb');
 
-module.exports = secret => async(req, resp, next) => {
+module.exports = secret => async (req, resp, next) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
@@ -18,12 +18,14 @@ module.exports = secret => async(req, resp, next) => {
   try {
     const decodedToken = jwt.verify(token, secret);
     // TODO: Verificar identidad del usuario usando `decodeToken.uid`
-    const userExist = await (await db()).collection('users').findOne({ _id: new ObjectId(decodedToken.uid) });  
+    const userExist = await (await db()).collection('users').findOne(
+      { _id: new ObjectId(decodedToken.uid) },
+    );
     if (!userExist) {
       return next(404);
     }
     req.headers.authenticatedUser = userExist;
-    next()
+    next();
   } catch (error) {
     return next(403);
   }
@@ -39,6 +41,17 @@ module.exports.isAuthenticated = req => (
 module.exports.isAdmin = req => (
   // TODO: decidir por la informacion del request si la usuaria es admin
   req.headers.authenticatedUser.roles.admin
+);
+
+
+module.exports.isTheUserToConsult = req => (
+  req.headers.authenticatedUser._id === new ObjectId(req.params)
+);
+
+module.exports.requireAdminOrTheUserToConsult = (req, resp, next) => (
+  module.exports.isAdmin(req) || module.exports.isAdminOrTheUserToConsult(req)
+    ? next()
+    : next(403)
 );
 
 
