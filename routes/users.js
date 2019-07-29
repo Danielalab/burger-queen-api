@@ -4,7 +4,7 @@ const {
   getUsers,
   getUserById,
   addUser,
-  deletedUser,
+  deleteUser,
   updateUser,
 } = require('../controllers/users');
 
@@ -162,7 +162,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.delete('/users/:uid', requireAuth, deletedUser);
+  app.delete('/users/:uid', requireAuth, requireAdminOrTheUserToConsult, deleteUser);
 
   initAdminUser(app, next);
 };

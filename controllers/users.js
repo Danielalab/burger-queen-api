@@ -38,7 +38,16 @@ const addUser = async (req, resp, next) => {
   }
 };
 
-const deletedUser = (req, resp, next) => {};
+const deleteUser = async (req, resp, next) => {
+  const { uid } = req.params;
+  const collectionUsers = (await db()).collection('users');
+  const user = await collectionUsers.findOne({ _id: new ObjectId(uid) });
+  if (!user) {
+    return next(404);
+  }
+  await collectionUsers.deleteOne({ _id: new ObjectId(uid) });
+  resp.send({ _id: user._id, email: user.email, roles: user.roles });
+};
 
 const updateUser = (req, resp, next) => {};
 
@@ -46,6 +55,6 @@ module.exports = {
   getUsers,
   getUserById,
   addUser,
-  deletedUser,
+  deleteUser,
   updateUser,
 };
