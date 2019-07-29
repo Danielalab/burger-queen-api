@@ -1,14 +1,27 @@
 const db = require('../mongodb');
 const bcrypt = require('bcrypt');
+const { ObjectId } = require('mongodb');
 
 const getUsers = (req, resp) => {};
 
-const getUserById = (req, resp) => {};
+const getUserById = (req, resp) => {
+  const { uid } = req.params;
+  try {
+    const collectionUsers = (await db()).collection('users');
+    const { _id, email, roles } = await collectionUsers.findOne({ _id: new ObjectId(uid) });
+    if (!user) {
+      return next(404);
+    }
+    resp.send({ _id, email, roles });
+  } catch (error) {
+    return next(500);
+  }
+};
 
 const addUser = async (req, resp, next) => {
   const { email, password, roles } = req.body;
   if (!email || !password) {
-    next(400);
+    return next(400);
   }
   try {
     const collectionUsers = (await db()).collection('users');
@@ -25,7 +38,7 @@ const addUser = async (req, resp, next) => {
       .map(({ _id, email, roles }) => ({ _id, email, roles }));
     resp.send(users);
   } catch (error) {
-    next(500);
+    return next(500);
   }
 
 };
