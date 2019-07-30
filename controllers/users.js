@@ -2,7 +2,17 @@ const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 const db = require('../connectdb');
 
-const getUsers = (req, resp) => {};
+const getUsers = async (req, resp) => {
+  const { page = 1, limit = 10 } = req.query;
+  const numberOfDocumentsToSkip = (parseInt(page, 10) * parseInt(limit, 10)) - parseInt(limit, 10);
+  const collectionUsers = (await db()).collection('users');
+  const users = (await collectionUsers.find()
+    .limit(parseInt(limit, 10))
+    .skip(numberOfDocumentsToSkip)
+    .toArray())
+    .map(({ _id, email, roles }) => ({ _id, email, roles }));
+  resp.send(users);
+};
 
 const getUserById = async (req, resp, next) => {
   const { uid } = req.params;
