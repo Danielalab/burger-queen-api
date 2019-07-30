@@ -17,7 +17,14 @@ const getUsers = async (req, resp) => {
 const getUserById = async (req, resp, next) => {
   const { uid } = req.params;
   const collectionUsers = (await db()).collection('users');
-  const user = await collectionUsers.findOne({ _id: new ObjectId(uid) });
+  let query;
+  try {
+    query = { _id: new ObjectId(uid) };
+  } catch (error) {
+    query = { email: uid };
+  }
+
+  const user = await collectionUsers.findOne(query);
   if (!user) {
     return next(404);
   }

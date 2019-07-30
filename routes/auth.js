@@ -28,15 +28,15 @@ module.exports = (app, nextMain) => {
     // TODO: autenticar a la usuarix
 
     // verificar que existe en el usuario en la DB
-    const user = await (await db()).collection('users').findOne({ email: req.body.email });
-    if (!user) return next(401);
+    const user = await (await db()).collection('users').findOne({ email });
+    if (!user) return next(404);
     // verificar que la contraseña sea correcta
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return next(401);
 
     // crear y asignar un token al usuario
     const token = jwt.sign({ uid: user._id }, secret);
-    resp.send(token);
+    resp.send({ token });
   });
 
   return nextMain();
