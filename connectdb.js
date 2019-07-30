@@ -8,4 +8,4 @@ module.exports = async (url) => {
     db = client.db('burger-queen');
   }
   return db;
-}
+};

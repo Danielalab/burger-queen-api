@@ -29,7 +29,6 @@ const init = async () => {
       // Registrar rutas
       routes(app, (err) => {
         if (err) {
-          console.log(error)
           throw err;
         }
 
