@@ -63,7 +63,7 @@ const updateUser = async (req, resp, next) => {
   if (!user) {
     return next(404);
   }
-  const updatedUser = await collectionUsers.updateOne(
+  await collectionUsers.updateOne(
     { _id: new ObjectId(uid) },
     {
       $set: {
@@ -73,7 +73,7 @@ const updateUser = async (req, resp, next) => {
       },
     },
   );
-  resp.send(updatedUser);
+  resp.send({ _id: user._id, email: user.email, roles: user.roles });
 };
 
 module.exports = {
