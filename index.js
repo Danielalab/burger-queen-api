@@ -18,29 +18,28 @@ const init = async () => {
     .then(() => {
       app.set('config', config);
       app.set('pkg', pkg);
-    
+
       // parse application/x-www-form-urlencoded
       // Va a entender datos sencillos (texto) de un formulario
       app.use(express.urlencoded({ extended: false }));
       // nos ayuda a que podamos recibir y comprender el formato json()
       app.use(express.json());
       app.use(authMiddleware(secret));
-    
+
       // Registrar rutas
       routes(app, (err) => {
         if (err) {
           console.log(error)
           throw err;
         }
-    
+
         app.use(errorHandler);
-    
+
         app.listen(port, () => {
           console.info(`App listening on port ${port}`);
         });
       });
-    })
-  
-}
+    });
+};
 // initializing db and server
 init();

@@ -49,7 +49,32 @@ const deleteUser = async (req, resp, next) => {
   resp.send({ _id: user._id, email: user.email, roles: user.roles });
 };
 
-const updateUser = (req, resp, next) => {};
+const updateUser = async (req, resp, next) => {
+  const { uid } = req.params;
+  const { email, password, roles } = req.body;
+  if (!email || !password) {
+    return next(400);
+  }
+  if (roles && !req.headers.authenticatedUser.roles.admin && roles.admin) {
+    return next(403);
+  }
+  const collectionUsers = (await db()).collection('users');
+  const user = await collectionUsers.findOne({ _id: new ObjectId(uid) });
+  if (!user) {
+    return next(404);
+  }
+  const updatedUser = await collectionUsers.updateOne(
+    { _id: new ObjectId(uid) },
+    {
+      $set: {
+        email,
+        password: bcrypt.hashSync(password, 10),
+        roles: roles || user.roles,
+      },
+    },
+  );
+  resp.send(updatedUser);
+};
 
 module.exports = {
   getUsers,

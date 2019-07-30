@@ -26,7 +26,7 @@ module.exports = (app, nextMain) => {
     }
 
     // TODO: autenticar a la usuarix
-    
+
     // verificar que existe en el usuario en la DB
     const user = await (await db()).collection('users').findOne({ email: req.body.email });
     if (!user) return next(401);
