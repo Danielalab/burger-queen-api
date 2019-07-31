@@ -46,6 +46,7 @@ module.exports.isAdmin = req => (
 
 module.exports.isTheUserToConsult = req => (
   req.headers.authenticatedUser._id.toString() === req.params.uid
+  || req.headers.authenticatedUser.email === req.params.uid
 );
 
 module.exports.requireAdminOrTheUserToConsult = (req, resp, next) => (

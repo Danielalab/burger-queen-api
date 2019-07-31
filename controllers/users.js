@@ -58,34 +58,46 @@ const addUser = async (req, resp, next) => {
 const deleteUser = async (req, resp, next) => {
   const { uid } = req.params;
   const collectionUsers = (await db()).collection('users');
-  const user = await collectionUsers.findOne({ _id: new ObjectId(uid) });
+  let query;
+  try {
+    query = { _id: new ObjectId(uid) };
+  } catch (error) {
+    query = { email: uid };
+  }
+  const user = await collectionUsers.findOne(query);
   if (!user) {
     return next(404);
   }
-  await collectionUsers.deleteOne({ _id: new ObjectId(uid) });
+  await collectionUsers.deleteOne(query);
   resp.send({ _id: user._id, email: user.email, roles: user.roles });
 };
 
 const updateUser = async (req, resp, next) => {
   const { uid } = req.params;
   const { email, password, roles } = req.body;
-  if (!email || !password) {
-    return next(400);
-  }
   if (roles && !req.headers.authenticatedUser.roles.admin && roles.admin) {
     return next(403);
   }
   const collectionUsers = (await db()).collection('users');
-  const user = await collectionUsers.findOne({ _id: new ObjectId(uid) });
+  let query;
+  try {
+    query = { _id: new ObjectId(uid) };
+  } catch (error) {
+    query = { email: uid };
+  }
+  const user = await collectionUsers.findOne(query);
   if (!user) {
     return next(404);
   }
+  if (!(email || password)) {
+    return next(400);
+  }
   await collectionUsers.updateOne(
-    { _id: new ObjectId(uid) },
+    query,
     {
       $set: {
-        email,
-        password: bcrypt.hashSync(password, 10),
+        email: email || user.email,
+        password: password ? bcrypt.hashSync(password, 10) : user.password,
         roles: roles || user.roles,
       },
     },
