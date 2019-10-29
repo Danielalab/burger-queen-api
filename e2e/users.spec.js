@@ -144,10 +144,17 @@ describe('POST /users', () => {
       .then(resp => expect(resp.status).toBe(400))
   ));
 
-  it('FIXME: should fail with 400 when invalid email', () => { });
-  it('FIXME: should fail with 400 when invalid password', () => { });
+  it('should fail with 400 when invalid email', () => (
+    fetchAsAdmin('/users', { method: 'POST', body: { email: 'failemail', password: '123456' } })
+      .then(resp => expect(resp.status).toBe(400))
+  ));
 
-  it('should create new user', () => {
+  it('should fail with 400 when invalid password', () => (
+    fetchAsAdmin('/users', { method: 'POST', body: { email: 'email@test.tes', password: '12' } })
+      .then(resp => expect(resp.status).toBe(400))
+  ));
+
+  it('should create new user', (done) => {
     fetchAsAdmin('/users', {
       method: 'POST',
       body: {
@@ -166,6 +173,7 @@ describe('POST /users', () => {
         expect(typeof json.password).toBe('undefined');
         expect(typeof json.roles).toBe('object');
         expect(json.roles.admin).toBe(false);
+        done();
       });
   });
 

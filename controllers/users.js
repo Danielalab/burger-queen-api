@@ -75,9 +75,7 @@ const deleteUser = async (req, resp, next) => {
 const updateUser = async (req, resp, next) => {
   const { uid } = req.params;
   const { email, password, roles } = req.body;
-  if (roles && !req.headers.authenticatedUser.roles.admin && roles.admin) {
-    return next(403);
-  }
+
   const collectionUsers = (await db()).collection('users');
   let query;
   try {
@@ -89,9 +87,13 @@ const updateUser = async (req, resp, next) => {
   if (!user) {
     return next(404);
   }
+  if (roles && !req.headers.authenticatedUser.roles.admin && roles.admin) {
+    return next(403);
+  }
   if (!(email || password)) {
     return next(400);
   }
+
   await collectionUsers.updateOne(
     query,
     {
