@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1573159658145" clover="3.2.0">
-  <project timestamp="1573159658145" name="All files">
-    <metrics statements="75" coveredstatements="23" conditionals="44" coveredconditionals="11" methods="8" coveredmethods="1" elements="127" coveredelements="35" complexity="0" loc="75" ncloc="75" packages="3" files="3" classes="3"/>
+<coverage generated="1573159764038" clover="3.2.0">
+  <project timestamp="1573159764038" name="All files">
+    <metrics statements="75" coveredstatements="33" conditionals="44" coveredconditionals="16" methods="8" coveredmethods="3" elements="127" coveredelements="52" complexity="0" loc="75" ncloc="75" packages="3" files="3" classes="3"/>
     <package name="burger-queen-api">
       <metrics statements="5" coveredstatements="5" conditionals="11" coveredconditionals="8" methods="0" coveredmethods="0"/>
       <file name="config.js" path="/home/daniela/Documentos/laboratoria/bootcamp/projects/burger-queen-api/config.js">
@@ -14,9 +14,9 @@
       </file>
     </package>
     <package name="burger-queen-api.controllers">
-      <metrics statements="63" coveredstatements="15" conditionals="31" coveredconditionals="3" methods="7" coveredmethods="1"/>
+      <metrics statements="63" coveredstatements="21" conditionals="31" coveredconditionals="6" methods="7" coveredmethods="2"/>
       <file name="users.js" path="/home/daniela/Documentos/laboratoria/bootcamp/projects/burger-queen-api/controllers/users.js">
-        <metrics statements="63" coveredstatements="15" conditionals="31" coveredconditionals="3" methods="7" coveredmethods="1"/>
+        <metrics statements="63" coveredstatements="21" conditionals="31" coveredconditionals="6" methods="7" coveredmethods="2"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -43,13 +43,13 @@
         <line num="37" count="0" type="stmt"/>
         <line num="39" count="1" type="stmt"/>
         <line num="40" count="1" type="stmt"/>
-        <line num="41" count="0" type="stmt"/>
-        <line num="42" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="42" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="43" count="0" type="stmt"/>
-        <line num="45" count="0" type="stmt"/>
-        <line num="50" count="0" type="stmt"/>
-        <line num="51" count="0" type="stmt"/>
-        <line num="52" count="0" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
         <line num="54" count="1" type="stmt"/>
         <line num="55" count="1" type="stmt"/>
         <line num="59" count="1" type="stmt"/>
@@ -83,16 +83,16 @@
       </file>
     </package>
     <package name="burger-queen-api.libs">
-      <metrics statements="7" coveredstatements="3" conditionals="2" coveredconditionals="0" methods="1" coveredmethods="0"/>
+      <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
       <file name="connectdb.js" path="/home/daniela/Documentos/laboratoria/bootcamp/projects/burger-queen-api/libs/connectdb.js">
-        <metrics statements="7" coveredstatements="3" conditionals="2" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
-        <line num="7" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="8" count="0" type="stmt"/>
-        <line num="9" count="0" type="stmt"/>
-        <line num="11" count="0" type="stmt"/>
+        <line num="7" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="11" count="3" type="stmt"/>
       </file>
     </package>
   </project>
