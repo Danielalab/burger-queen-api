@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
-const db = require('../connectdb');
+const db = require('../libs/connectdb');
 
 module.exports = secret => async (req, resp, next) => {
   const { authorization } = req.headers;

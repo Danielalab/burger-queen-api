@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const db = require('../connectdb');
+const db = require('../libs/connectdb');
 const {
   getUsers,
   getUserById,
