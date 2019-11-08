@@ -51,7 +51,6 @@ const addUser = async (req, resp, next) => {
       .map(({ _id, email, roles }) => ({ _id, email, roles }));
     resp.send(users);
   } catch (error) {
-    console.log(error.message)
     return next(500);
   }
 };

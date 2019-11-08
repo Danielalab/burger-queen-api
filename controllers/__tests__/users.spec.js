@@ -316,6 +316,7 @@ describe('updateUser', () => {
 })
 
 describe('getUserById', () => {
+  let users = null;
   beforeAll(async () => {
     await db();
     const collectionUsers = (await db()).collection('users');
@@ -331,9 +332,47 @@ describe('getUserById', () => {
     await db().close();
   });
 
-  it('Deberia de poder obtener un usuario por su uid', () => {})
-  it('Deberia de poder obtener un usuario por su email', () => {})
-  it('Deberia de mostar un error 404 si no existe el usuario', () => {})
+  it('Deberia de poder obtener un usuario por su uid', () => {
+    const userId = users.insertedIds['0'];
+    const req = {
+      params: {
+        uid: userId,
+      },
+    };
+    const resp = {
+      send: (response) => {
+        expect(response._id).toEqual(userId);
+      }
+    };
+    getUserById(req, resp);
+  })
+
+  it('Deberia de poder obtener un usuario por su email', () => {
+    const userId = users.insertedIds['0'];
+    const req = {
+      params: {
+        uid: 'user@test',
+      },
+    };
+    const resp = {
+      send: (response) => {
+        expect(response._id).toEqual(userId);
+      }
+    };
+    getUserById(req, resp);
+  })
+
+  it('Deberia de mostar un error 404 si no existe el usuario', () => {
+    const req = {
+      params: {
+        uid: 'fakeuid',
+      },
+    };
+    const next = (code) => {
+      expect(code).toEqual(404);
+    }
+    getUserById(req, {}, next);
+  })
 })
 
 describe('getUsers', () => {
