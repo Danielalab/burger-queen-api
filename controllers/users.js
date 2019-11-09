@@ -1,16 +1,31 @@
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 const db = require('../libs/connectdb');
+const { getPagination } = require('./utils');
 
 const getUsers = async (req, resp) => {
   const { page = 1, limit = 10 } = req.query;
   const numberOfDocumentsToSkip = (parseInt(page, 10) * parseInt(limit, 10)) - parseInt(limit, 10);
   const collectionUsers = (await db()).collection('users');
+  const numberOfDocuments = (await collectionUsers.countDocuments());
   const users = (await collectionUsers.find()
     .limit(parseInt(limit, 10))
     .skip(numberOfDocumentsToSkip)
     .toArray())
     .map(({ _id, email, roles }) => ({ _id, email, roles }));
+    console.log(getPagination({
+      collectionName: 'users',
+      numberOfDocuments,
+      limit,
+      currentPage: page
+    }))
+  const link = getPagination({
+    collectionName: 'users',
+    numberOfDocuments,
+    limit,
+    currentPage: page
+  });
+  resp.set('link', link);
   resp.send(users);
 };
 
