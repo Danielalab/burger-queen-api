@@ -13,19 +13,13 @@ const getUsers = async (req, resp) => {
     .skip(numberOfDocumentsToSkip)
     .toArray())
     .map(({ _id, email, roles }) => ({ _id, email, roles }));
-    console.log(getPagination({
-      collectionName: 'users',
-      numberOfDocuments,
-      limit,
-      currentPage: page
-    }))
   const link = getPagination({
     collectionName: 'users',
     numberOfDocuments,
     limit,
     currentPage: page
   });
-  resp.set('link', link);
+  resp.set('link', `${link.first}, ${link.prev}, ${link.next}, ${link.last}`);
   resp.send(users);
 };
 
