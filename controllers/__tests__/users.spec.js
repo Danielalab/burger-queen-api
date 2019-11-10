@@ -411,7 +411,6 @@ describe('getUsers', () => {
 
     const resp = {
       send: (response) => {
-        console.log(response)
         expect(response.length).toBe(3);
         expect(response[0].email).toBe('user@test');
         done();
