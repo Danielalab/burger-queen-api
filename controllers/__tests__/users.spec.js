@@ -14,6 +14,7 @@ describe('addUsers', () => {
   });
 
   afterAll(async () => {
+    await (await db()).collection('users').deleteMany({})
     await db().close();
   });
 
@@ -110,6 +111,7 @@ describe('deleteUser', () => {
   });
 
   afterAll(async () => {
+    await (await db()).collection('users').deleteMany({})
     await db().close();
   });
 
@@ -182,6 +184,7 @@ describe('updateUser', () => {
   });
 
   afterAll(async () => {
+    await (await db()).collection('users').deleteMany({})
     await db().close();
   });
 
@@ -329,6 +332,7 @@ describe('getUserById', () => {
   });
 
   afterAll(async () => {
+    await (await db()).collection('users').deleteMany({})
     await db().close();
   });
 
@@ -379,7 +383,7 @@ describe('getUsers', () => {
   beforeAll(async () => {
     await db();
     const collectionUsers = (await db()).collection('users');
-    users = await collectionUsers.insertMany([
+    await collectionUsers.insertMany([
       {
         email: 'user@test',
         roles: { admin: true },
@@ -396,10 +400,29 @@ describe('getUsers', () => {
   });
 
   afterAll(async () => {
+    await (await db()).collection('users').deleteMany({})
     await db().close();
   });
 
-  it('Deberia de poder obtener un usuario por su uid', () => {})
-  it('Deberia de poder obtener un usuario por su email', () => {})
-  it('Deberia de mostar un error 404 si no existe el usuario', () => {})
+  it('Deberia de poder obtener 3 usuarios', (done) => {
+    const req = {
+      query: {},
+    };
+
+    const resp = {
+      send: (response) => {
+        console.log(response)
+        expect(response.length).toBe(3);
+        expect(response[0].email).toBe('user@test');
+        done();
+      },
+      set: (nameHeader, header) => {
+        expect(nameHeader).toBe('link');
+        expect(header).toBe('</users?limit=10&page=1>; rel="first", </users?limit=10&page=1>; rel="prev", </users?limit=10&page=1>; rel="next", </users?limit=10&page=1>; rel="last"')
+      }
+    }
+    getUsers(req, resp);
+  })
+  /* it('Deberia de poder obtener un usuario por su email', () => {})
+  it('Deberia de mostar un error 404 si no existe el usuario', () => {}) */
 })
