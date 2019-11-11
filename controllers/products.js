@@ -46,7 +46,24 @@ const getProductById = async (req, resp, next) => {
   );
 }
 
+const addProduct = async (req, resp, next) => {
+  const { name, price, image = '', type = '' } = req.body;
+  const collectionProducts = (await db()).collection('products');
+  if (!name || !price) {
+    return next(400);
+  }
+  const productId = (await collectionProducts.insertOne({
+    name,
+    price,
+    image,
+    type
+  })).insertedId;
+  const product = await collectionProducts.findOne({ _id: new ObjectId(productId) })
+  resp.send(product);
+}
+
 module.exports = {
   getProducts,
   getProductById,
+  addProduct,
 }

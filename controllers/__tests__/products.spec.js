@@ -125,11 +125,11 @@ describe('getProductById', () => {
 });
 
 describe('addProduct', () => {
-  afterAll(async () => {
+  beforeAll(async () => {
     await db();
   })
 
-  beforeAll(async () => {
+  afterAll(async () => {
     await (await db()).collection('products').deleteMany({});
     await db().close();
   })
@@ -205,7 +205,7 @@ describe('addProduct', () => {
     addProduct(req, {}, next);
   })
 
-  it('Deberia de mostrar un error 400 si no se envia price', () => {
+  it('Deberia de mostrar un error 400 si no se envia price', (done) => {
     const req = {
       body: {
         name: 'Hamburguesa simple',
