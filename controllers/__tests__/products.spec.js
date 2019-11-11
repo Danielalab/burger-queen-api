@@ -221,3 +221,61 @@ describe('addProduct', () => {
     addProduct(req, {}, next);
   })
 })
+
+describe('deleteProduct', () => {
+  let products;
+  beforeAll(async () => {
+    await db();
+    const collectionProducts = (await db()).collection('products');
+    products = await collectionProducts.insertMany([
+      {
+        name: 'Hamburguesa simple',
+        price: '10',
+        image: 'http://burger-simple.img',
+        type: 'hamburguesas',
+        dateEntry: new Date(),
+      },
+      {
+        name: 'Jugos de frutas natural',
+        price: '7',
+        image: 'http://jugo.img',
+        type: 'bebidas',
+        dateEntry: new Date(),
+      }
+    ]);
+  })
+
+  afterAll(async () => {
+    await (await db()).collection('products').deleteMany({});
+    await db().close();
+  })
+
+  it('Deberia de poder eliminar un producto por su id', (done) => {
+    const productId = products.insertedIds['0'];
+    const req = {
+      params: {
+        productId,
+      }
+    };
+    const resp = {
+      send: (response) => {
+        expect(response._id).toBe(productId);
+        expect(response.name).toBe('Hamburguesa simple');
+        done();
+      }
+    }
+    deleteProduct(req, resp);
+  })
+
+  it('Deberia de mostrar un error 404 si el producto no existe', (done) => {
+    const req = {
+      params: {
+        productId: 'fakeproductid032222222a2',
+      }
+    };
+    const next = (code) => {
+      expect(code).toBe(404);
+    };
+    deleteProduct(req, {}, next);
+  })
+})
