@@ -1,6 +1,7 @@
 const {
   getProducts,
-  getProductById
+  getProductById,
+  addProduct
 } = require('../products');
 
 const db = require('../../libs/connectdb');
@@ -120,5 +121,103 @@ describe('getProductById', () => {
       done();
     };
     getProductById(req, {}, next);
+  })
+});
+
+describe('addProduct', () => {
+  afterAll(async () => {
+    await db();
+  })
+
+  beforeAll(async () => {
+    await (await db()).collection('products').deleteMany({});
+    await db().close();
+  })
+
+  it('Deberia de poder agregar un producto', (done) => {
+    const req = {
+      body: {
+        name: 'Hamburguesa simple',
+        price: '10',
+        image: 'http://burger-simple.jpg',
+        type: 'hamburguesas',
+      },
+    };
+    const resp = {
+      send: (response) => {
+        expect(response.name).toBe('Hamburguesa simple');
+        expect(response.price).toBe('10');
+        done();
+      }
+    }
+    addProduct(req, resp);
+  })
+
+  it('Deberia de poder agregar un producto si no envia image', (done) => {
+    const req = {
+      body: {
+        name: 'Hamburguesa doble',
+        price: '15',
+        type: 'hamburguesas',
+      },
+    };
+    const resp = {
+      send: (response) => {
+        expect(response.name).toBe('Hamburguesa doble');
+        expect(response.price).toBe('15');
+        done();
+      }
+    }
+    addProduct(req, resp);
+  })
+
+  it('Deberia de poder agregar un producto si no envia type', (done) => {
+    const req = {
+      body: {
+        name: 'Cafe americano',
+        price: '7',
+        image: 'http://image-cafe',
+      },
+    };
+    const resp = {
+      send: (response) => {
+        expect(response.name).toBe('Cafe americano');
+        expect(response.price).toBe('7');
+        done();
+      }
+    }
+    addProduct(req, resp);
+  })
+
+  it('Deberia de mostrar un error 400 si no se envia name', (done) => {
+    const req = {
+      body: {
+        price: '10',
+        image: 'http://burger-simple.jpg',
+        type: 'hamburguesas',
+        dateEntry: new Date(),
+      }
+    }
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    }
+    addProduct(req, {}, next);
+  })
+
+  it('Deberia de mostrar un error 400 si no se envia price', () => {
+    const req = {
+      body: {
+        name: 'Hamburguesa simple',
+        image: 'http://burger-simple.jpg',
+        type: 'hamburguesas',
+        dateEntry: new Date(),
+      }
+    }
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    }
+    addProduct(req, {}, next);
   })
 })
