@@ -38,7 +38,7 @@ describe('getProducts', () => {
     await db().close();
   })
 
-  it('Deberia de poder obtener los 3 productos', () => {
+  it('Deberia de poder obtener los 3 productos', (done) => {
     const req = { query: {} };
     const resp = {
       send: (response) => {
@@ -55,3 +55,44 @@ describe('getProducts', () => {
     getProducts(req, resp);
   })
 });
+
+describe('getProductById', () => {
+  beforeAll(async () => {
+    await db();
+    const collectionProducts = (await db()).collection('products');
+    await collectionProducts.insertMany([
+      {
+        name: 'Hamburguesa simple',
+        price: '10',
+        image: 'http://burger-simple.img',
+        type: 'hamburguesas',
+        dateEntry: new Date(),
+      },
+      {
+        name: 'Hamburguesa doble',
+        price: '15',
+        image: 'http://burger-double.img',
+        type: 'hamburguesas',
+        dateEntry: new Date(),
+      },
+      {
+        name: 'Jugos de frutas natural',
+        price: '7',
+        image: 'http://jugo.img',
+        type: 'bebidas',
+        dateEntry: new Date(),
+      }
+    ]);
+  })
+
+  afterAll(async () => {
+    await (await db()).collection('products').deleteMany({});
+    await db().close();
+  })
+
+  it('Deberia de poder obtener un producto por su uid', (done) => {
+
+  })
+
+  it('Deberia de poder obtener un ')
+})

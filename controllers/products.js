@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const db = require('../libs/connectdb');
 const { getPagination } = require('./utils');
 
@@ -24,6 +25,18 @@ const getProducts = async (req, resp, next) => {
   } catch (error) {
     next(500)
   }
+}
+
+const getProductById = async (req, resp, next) => {
+  const { uid } = req.params;
+  const collectionProducts = (await db()).collection('products');
+  const product = await collectionProducts.findOne(new ObjectId(uid));
+  if (!product) {
+    next(404);
+  }
+  resp.send(
+    ({ _id, name, price, type, dateEntry }) => ({ _id, name, price, type, dateEntry })
+  );
 }
 
 module.exports = {
