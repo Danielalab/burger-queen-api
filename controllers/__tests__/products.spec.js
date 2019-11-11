@@ -1,5 +1,6 @@
 const {
-  getProducts
+  getProducts,
+  getProductById
 } = require('../products');
 
 const db = require('../../libs/connectdb');
@@ -48,7 +49,7 @@ describe('getProducts', () => {
       },
       set: (nameHeader, header) => {
         expect(nameHeader).toBe('link');
-        expect(header).toBe('</products?limit=10&page=1>; rel="first", </products?limit=10&page=1>; rel="prev", </products?limit=10&page=1>; rel="next", </products?limit=10&page=1>; rel="last"')
+        expect(header).toBe('</products?limit=10&page=1>; rel="first", </products?limit=10&page=1>; rel="prev", </products?limit=10&page=1>; rel="next", </products?limit=10&page=1>; rel="last"');
         done();
       }
     }
@@ -57,10 +58,11 @@ describe('getProducts', () => {
 });
 
 describe('getProductById', () => {
+  let products;
   beforeAll(async () => {
     await db();
     const collectionProducts = (await db()).collection('products');
-    await collectionProducts.insertMany([
+    products = await collectionProducts.insertMany([
       {
         name: 'Hamburguesa simple',
         price: '10',
@@ -91,8 +93,32 @@ describe('getProductById', () => {
   })
 
   it('Deberia de poder obtener un producto por su uid', (done) => {
-
+    const idProduct = products.insertedIds['2'];
+    const req = {
+      params: {
+        uid: idProduct,
+      }
+    };
+    const resp = {
+      send: (response) => {
+        expect(response._id).toEqual(idProduct);
+        expect(response.name).toBe('Jugos de frutas natural');
+        done();
+      }
+    };
+    getProductById(req, resp);
   })
 
-  it('Deberia de poder obtener un ')
+  it('Deberia de poder obtener un error 404 si no existe el producto', (done) => {
+    const req = {
+      params: {
+        uid: '5dc99b50c5841032222222a2',
+      }
+    };
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
+    getProductById(req, {}, next);
+  })
 })

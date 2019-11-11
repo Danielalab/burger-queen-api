@@ -3,7 +3,7 @@ const db = require('../libs/connectdb');
 const { getPagination } = require('./utils');
 
 const getProducts = async (req, resp, next) => {
-  const { page = 1, limit = 1 } = req.query;
+  const { page = 1, limit = 10 } = req.query;
   const numberOfDocumentsToSkip = (parseInt(page, 10) * parseInt(limit, 10)) - parseInt(limit, 10);
   try {
     const collectionProducts = (await db()).collection('products');
@@ -30,15 +30,23 @@ const getProducts = async (req, resp, next) => {
 const getProductById = async (req, resp, next) => {
   const { uid } = req.params;
   const collectionProducts = (await db()).collection('products');
-  const product = await collectionProducts.findOne(new ObjectId(uid));
+  const query = { _id: new ObjectId(uid) };
+  const product = await collectionProducts.findOne(query);
   if (!product) {
-    next(404);
+    return next(404);
   }
   resp.send(
-    ({ _id, name, price, type, dateEntry }) => ({ _id, name, price, type, dateEntry })
+    {
+      _id: product._id,
+      name: product.name,
+      price: product.price,
+      type: product.type,
+      dateEntry: product.dateEntry,
+    }
   );
 }
 
 module.exports = {
-  getProducts
+  getProducts,
+  getProductById,
 }
