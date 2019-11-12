@@ -1,7 +1,8 @@
 const {
   getProducts,
   getProductById,
-  addProduct
+  addProduct,
+  deleteProduct
 } = require('../products');
 
 const db = require('../../libs/connectdb');
@@ -259,7 +260,7 @@ describe('deleteProduct', () => {
     };
     const resp = {
       send: (response) => {
-        expect(response._id).toBe(productId);
+        expect(response._id).toEqual(productId);
         expect(response.name).toBe('Hamburguesa simple');
         done();
       }
@@ -270,11 +271,12 @@ describe('deleteProduct', () => {
   it('Deberia de mostrar un error 404 si el producto no existe', (done) => {
     const req = {
       params: {
-        productId: 'fakeproductid032222222a2',
+        productId: '5ca99b50c5841032222222a2',
       }
     };
     const next = (code) => {
       expect(code).toBe(404);
+      done();
     };
     deleteProduct(req, {}, next);
   })

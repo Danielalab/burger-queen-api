@@ -62,8 +62,20 @@ const addProduct = async (req, resp, next) => {
   resp.send(product);
 }
 
+const deleteProduct = async (req, resp, next) => {
+  const { productId } = req.params;
+  const collectionProducts = (await db()).collection('products');
+  const product = await collectionProducts.findOne({ _id: new ObjectId(productId) });
+  if (!product) {
+    return next(404);
+  }
+  await collectionProducts.deleteOne({ _id: new ObjectId(productId) });
+  resp.send(product);
+}
+
 module.exports = {
   getProducts,
   getProductById,
   addProduct,
+  deleteProduct
 }
