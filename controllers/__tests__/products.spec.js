@@ -2,7 +2,8 @@ const {
   getProducts,
   getProductById,
   addProduct,
-  deleteProduct
+  deleteProduct,
+  updateProduct
 } = require('../products');
 
 const db = require('../../libs/connectdb');
@@ -304,7 +305,7 @@ describe('updateProduct', () => {
   })
 
   it('Deberia de poder actualizar un producto por su id', (done) => {
-    const productId = products.insertedIds('0');
+    const productId = products.insertedIds['0'];;
     const req = {
       params: {
         productId,
@@ -344,6 +345,9 @@ describe('updateProduct', () => {
     const req = {
       params: {
         productId: '5ca99b50c5841032222222a2',
+      },
+      body: {
+        price: 10,
       }
     };
 

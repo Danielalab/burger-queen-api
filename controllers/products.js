@@ -73,9 +73,36 @@ const deleteProduct = async (req, resp, next) => {
   resp.send(product);
 }
 
+const updateProduct = async (req, resp, next) => {
+  const { productId } = req.params;
+  const { name, price, image, type } = req.body;
+  if (!name && !price && !image && !type) {
+    return next(400);
+  }
+  const collectionProducts = (await db()).collection('products');
+  const product = await collectionProducts.findOne({ _id: new ObjectId(productId) });
+  if (!product) {
+    return next(404);
+  }
+  await collectionProducts.updateOne(
+    { _id: new ObjectId(productId) },
+    {
+      $set: {
+        name: name || product.name,
+        price: price || product.price,
+        type: type || product.type,
+        image: image || product.image
+      }
+    }
+  );
+  const updatedProduct = await collectionProducts.findOne({ _id: new ObjectId(productId) });
+  resp.send(updatedProduct);
+}
+
 module.exports = {
   getProducts,
   getProductById,
   addProduct,
-  deleteProduct
+  deleteProduct,
+  updateProduct
 }
