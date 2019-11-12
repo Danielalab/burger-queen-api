@@ -63,7 +63,7 @@ describe('getOrders', () => {
     await db().close();
   })
 
-  it('Deberia de obtener 2 ordenes', () => {
+  it('Deberia de obtener 2 ordenes', (done) => {
     const req = { query: {} };
     const resp = {
       send: (response) => {
