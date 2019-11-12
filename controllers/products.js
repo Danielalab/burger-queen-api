@@ -28,22 +28,19 @@ const getProducts = async (req, resp, next) => {
 }
 
 const getProductById = async (req, resp, next) => {
-  const { uid } = req.params;
+  const { productId } = req.params;
   const collectionProducts = (await db()).collection('products');
-  const query = { _id: new ObjectId(uid) };
+  let query;
+  try {
+    query = { _id: new ObjectId(productId) }
+  } catch (error) {
+    return next(404);
+  }
   const product = await collectionProducts.findOne(query);
   if (!product) {
     return next(404);
   }
-  resp.send(
-    {
-      _id: product._id,
-      name: product.name,
-      price: product.price,
-      type: product.type,
-      dateEntry: product.dateEntry,
-    }
-  );
+  resp.send(product);
 }
 
 const addProduct = async (req, resp, next) => {
@@ -65,11 +62,17 @@ const addProduct = async (req, resp, next) => {
 const deleteProduct = async (req, resp, next) => {
   const { productId } = req.params;
   const collectionProducts = (await db()).collection('products');
-  const product = await collectionProducts.findOne({ _id: new ObjectId(productId) });
+  let query;
+  try {
+    query = { _id: new ObjectId(productId) }
+  } catch (error) {
+    return next(404);
+  }
+  const product = await collectionProducts.findOne(query);
   if (!product) {
     return next(404);
   }
-  await collectionProducts.deleteOne({ _id: new ObjectId(productId) });
+  await collectionProducts.deleteOne(query);
   resp.send(product);
 }
 
@@ -79,13 +82,22 @@ const updateProduct = async (req, resp, next) => {
   if (!name && !price && !image && !type) {
     return next(400);
   }
+  if (!(typeof price === 'number')) {
+    return next(400);
+  }
+  let query;
+  try {
+    query = { _id: new ObjectId(productId) }
+  } catch (error) {
+    return next(404);
+  }
   const collectionProducts = (await db()).collection('products');
-  const product = await collectionProducts.findOne({ _id: new ObjectId(productId) });
+  const product = await collectionProducts.findOne(query);
   if (!product) {
     return next(404);
   }
   await collectionProducts.updateOne(
-    { _id: new ObjectId(productId) },
+    query,
     {
       $set: {
         name: name || product.name,
@@ -95,7 +107,7 @@ const updateProduct = async (req, resp, next) => {
       }
     }
   );
-  const updatedProduct = await collectionProducts.findOne({ _id: new ObjectId(productId) });
+  const updatedProduct = await collectionProducts.findOne(query);
   resp.send(updatedProduct);
 }
 

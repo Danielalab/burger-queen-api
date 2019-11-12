@@ -99,7 +99,7 @@ describe('getProductById', () => {
     const idProduct = products.insertedIds['2'];
     const req = {
       params: {
-        uid: idProduct,
+        productId: idProduct,
       }
     };
     const resp = {
