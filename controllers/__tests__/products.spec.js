@@ -14,21 +14,21 @@ describe('getProducts', () => {
     await collectionProducts.insertMany([
       {
         name: 'Hamburguesa simple',
-        price: '10',
+        price: 10,
         image: 'http://burger-simple.img',
         type: 'hamburguesas',
         dateEntry: new Date(),
       },
       {
         name: 'Hamburguesa doble',
-        price: '15',
+        price: 15,
         image: 'http://burger-double.img',
         type: 'hamburguesas',
         dateEntry: new Date(),
       },
       {
         name: 'Jugos de frutas natural',
-        price: '7',
+        price: 7,
         image: 'http://jugo.img',
         type: 'bebidas',
         dateEntry: new Date(),
@@ -67,21 +67,21 @@ describe('getProductById', () => {
     products = await collectionProducts.insertMany([
       {
         name: 'Hamburguesa simple',
-        price: '10',
+        price: 10,
         image: 'http://burger-simple.img',
         type: 'hamburguesas',
         dateEntry: new Date(),
       },
       {
         name: 'Hamburguesa doble',
-        price: '15',
+        price: 15,
         image: 'http://burger-double.img',
         type: 'hamburguesas',
         dateEntry: new Date(),
       },
       {
         name: 'Jugos de frutas natural',
-        price: '7',
+        price: 7,
         image: 'http://jugo.img',
         type: 'bebidas',
         dateEntry: new Date(),
@@ -139,7 +139,7 @@ describe('addProduct', () => {
     const req = {
       body: {
         name: 'Hamburguesa simple',
-        price: '10',
+        price: 10,
         image: 'http://burger-simple.jpg',
         type: 'hamburguesas',
       },
@@ -147,7 +147,7 @@ describe('addProduct', () => {
     const resp = {
       send: (response) => {
         expect(response.name).toBe('Hamburguesa simple');
-        expect(response.price).toBe('10');
+        expect(response.price).toBe(10);
         done();
       }
     }
@@ -158,14 +158,14 @@ describe('addProduct', () => {
     const req = {
       body: {
         name: 'Hamburguesa doble',
-        price: '15',
+        price: 15,
         type: 'hamburguesas',
       },
     };
     const resp = {
       send: (response) => {
         expect(response.name).toBe('Hamburguesa doble');
-        expect(response.price).toBe('15');
+        expect(response.price).toBe(15);
         done();
       }
     }
@@ -176,14 +176,14 @@ describe('addProduct', () => {
     const req = {
       body: {
         name: 'Cafe americano',
-        price: '7',
+        price: 7,
         image: 'http://image-cafe',
       },
     };
     const resp = {
       send: (response) => {
         expect(response.name).toBe('Cafe americano');
-        expect(response.price).toBe('7');
+        expect(response.price).toBe(7);
         done();
       }
     }
@@ -193,7 +193,7 @@ describe('addProduct', () => {
   it('Deberia de mostrar un error 400 si no se envia name', (done) => {
     const req = {
       body: {
-        price: '10',
+        price: 10,
         image: 'http://burger-simple.jpg',
         type: 'hamburguesas',
         dateEntry: new Date(),
@@ -279,5 +279,79 @@ describe('deleteProduct', () => {
       done();
     };
     deleteProduct(req, {}, next);
+  })
+})
+
+describe('updateProduct', () => {
+  let products;
+  beforeAll(async () => {
+    await db();
+    const collectionProducts = (await db()).collection('products');
+    products = await collectionProducts.insertMany([
+      {
+        name: 'Jugos de frutas natural',
+        price: 7,
+        image: 'http://jugo.img',
+        type: 'bebidas',
+        dateEntry: new Date(),
+      }
+    ]);
+  })
+
+  afterAll(async () => {
+    await (await db()).collection('products').deleteMany({});
+    await db().close();
+  })
+
+  it('Deberia de poder actualizar un producto por su id', (done) => {
+    const productId = products.insertedIds('0');
+    const req = {
+      params: {
+        productId,
+      },
+      body: {
+        price: 8
+      }
+    }
+
+    const resp = {
+      send: (response) => {
+        expect(response._id).toEqual(productId);
+        expect(response.price).toBe(8);
+        done();
+      }
+    }
+
+    updateProduct(req, resp);
+  })
+
+  it('Deberia de mostar un error 400 si no hay ninguna prop a modificar', (done) => {
+    const req = {
+      params: {
+        productId: '5ca99b50c5841032222222a2',
+      },
+      body: {}
+    };
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    };
+
+    updateProduct(req, {}, next);
+  })
+
+  it('Deberia de mostrar un error 404 si no existe el producto', (done) => {
+    const req = {
+      params: {
+        productId: '5ca99b50c5841032222222a2',
+      }
+    };
+
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
+
+    updateProduct(req, {}, next);
   })
 })
