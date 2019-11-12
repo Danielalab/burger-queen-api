@@ -209,6 +209,7 @@ describe('updateUser', () => {
     const resp = {
       send: (response) => {
         expect(response._id).toEqual(userId);
+        expect(response.email).toBe('email@update');
         done();
       }
     }
@@ -235,7 +236,7 @@ describe('updateUser', () => {
 
     const resp = {
       send: (response) => {
-        expect(response.email).toBe('test2@test');
+        expect(response.email).toBe('email2@update');
         done();
       }
     }
