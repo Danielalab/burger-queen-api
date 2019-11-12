@@ -113,7 +113,8 @@ const updateUser = async (req, resp, next) => {
       },
     },
   );
-  resp.send({ _id: user._id, email: user.email, roles: user.roles });
+  const updatedUser = await collectionUsers.findOne({ _id: new ObjectId(user._id) });
+  resp.send(updatedUser);
 };
 
 module.exports = {

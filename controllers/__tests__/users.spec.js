@@ -337,7 +337,7 @@ describe('getUserById', () => {
     await db().close();
   });
 
-  it('Deberia de poder obtener un usuario por su uid', () => {
+  it('Deberia de poder obtener un usuario por su uid', (done) => {
     const userId = users.insertedIds['0'];
     const req = {
       params: {
@@ -347,12 +347,13 @@ describe('getUserById', () => {
     const resp = {
       send: (response) => {
         expect(response._id).toEqual(userId);
+        done();
       }
     };
     getUserById(req, resp);
   })
 
-  it('Deberia de poder obtener un usuario por su email', () => {
+  it('Deberia de poder obtener un usuario por su email', (done) => {
     const userId = users.insertedIds['0'];
     const req = {
       params: {
@@ -362,12 +363,13 @@ describe('getUserById', () => {
     const resp = {
       send: (response) => {
         expect(response._id).toEqual(userId);
+        done();
       }
     };
     getUserById(req, resp);
   })
 
-  it('Deberia de mostar un error 404 si no existe el usuario', () => {
+  it('Deberia de mostar un error 404 si no existe el usuario', (done) => {
     const req = {
       params: {
         uid: 'fakeuid',
@@ -375,6 +377,7 @@ describe('getUserById', () => {
     };
     const next = (code) => {
       expect(code).toEqual(404);
+      done();
     }
     getUserById(req, {}, next);
   })
@@ -418,7 +421,8 @@ describe('getUsers', () => {
       },
       set: (nameHeader, header) => {
         expect(nameHeader).toBe('link');
-        expect(header).toBe('</users?limit=10&page=1>; rel="first", </users?limit=10&page=1>; rel="prev", </users?limit=10&page=1>; rel="next", </users?limit=10&page=1>; rel="last"')
+        expect(header).toBe('</users?limit=10&page=1>; rel="first", </users?limit=10&page=1>; rel="prev", </users?limit=10&page=1>; rel="next", </users?limit=10&page=1>; rel="last"');
+        done();
       }
     }
     getUsers(req, resp);
