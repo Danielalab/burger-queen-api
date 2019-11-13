@@ -1,6 +1,7 @@
 const {
   getOrders,
-  getOrderById
+  getOrderById,
+  addOrder,
 } = require('../orders');
 
 const db = require('../../libs/connectdb');
@@ -189,4 +190,133 @@ describe('getOrderById', () => {
     };
     getOrderById(req, {}, next);
   })
+})
+
+describe('addOrder', () => {
+  let products;
+  beforeAll(async () => {
+    await db();
+    const collectionProducts = (await db()).collection('products');
+    products = await collectionProducts.insertMany([
+      {
+        name: 'Hamburguesa simple',
+        price: 10,
+        image: 'http://burger-simple.img',
+        type: 'hamburguesas',
+        dateEntry: new Date(),
+      },
+      {
+        name: 'Hamburguesa doble',
+        price: 15,
+        image: 'http://burger-double.img',
+        type: 'hamburguesas',
+        dateEntry: new Date(),
+      },
+      {
+        name: 'Jugos de frutas natural',
+        price: 7,
+        image: 'http://jugo.img',
+        type: 'bebidas',
+        dateEntry: new Date(),
+      }
+    ]);
+  })
+
+  afterAll(async() => {
+    await (await db()).collection(products).deleteMany({});
+    await db().close();
+  })
+
+  it('Deberia de poder agregar una order', (done) => {
+    const productsIds = products.insertedIds;
+    const req = {
+      body: {
+        userId: 'test123456',
+        client: 'Ana',
+        products: [
+          {
+            qty: 2,
+            productId: productsIds['2'],
+          },
+          {
+            qty: 1,
+            productId: productsIds['0'],
+          }
+        ],
+        status: 'pending',
+      },
+    };
+
+    const resp = {
+      send: (response) => {
+        expect(response.userId).toBe('test123456');
+        expect(response.name).toBe('Ana');
+        expect(response.products.length).toBe(2);
+        expect(response.products[0].name).toBe('Jugos de frutas natural');
+        expect(response.products[1].name).toBe('Hamburguesa simple');
+        done();
+      }
+    }
+
+    addOrder(req, resp);
+  })
+
+  it('Deberia de retornar un error 400 si no se envia userId', (done) => {
+    const productsIds = products.insertedIds;
+    const req = {
+      body: {
+        client: 'Ana',
+        products: [
+          {
+            qty: 2,
+            productId: productsIds['2'],
+          },
+          {
+            qty: 1,
+            productId: productsIds['0'],
+          }
+        ],
+        status: 'pending',
+      },
+    };
+
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    }
+
+    addOrder(req, {}, next);
+  })
+
+  it('Deberia de retornar un error 400 si no se envian props en body', (done) => {
+    const req = {
+      body: {},
+    };
+
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    }
+
+    addOrder(req, {}, next);
+  })
+
+  it('Deberia de retornar un error 400 si no se envian productos', (done) => {
+    const req = {
+      body: {
+        userId: 'test123456',
+        client: 'Ana',
+        products: [],
+        status: 'pending',
+      },
+    };
+
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    }
+
+    addOrder(req, {}, next);
+  })
+
 })
