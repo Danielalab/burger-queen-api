@@ -28,7 +28,6 @@ const getOrderById = async (req, resp, next) => {
   try {
     query = { _id: new ObjectId(orderId)};
   } catch (error) {
-    console.log('entre al catch', orderId)
     return next(404); 
   }
   const order = await collectionOrders.findOne(query);
@@ -38,7 +37,46 @@ const getOrderById = async (req, resp, next) => {
   resp.send(order);
 }
 
+const addOrder = async (req, resp, next) => {
+  const { userId, client, products, status } = req.body;
+  if (!userId || !client || !(products.length) || !status) {
+    return next(400);
+  }
+  const collectionOrders = (await db()).collection('orders');
+  const orderId = (await collectionOrders.insertOne({
+    userId,
+    client,
+    status,
+    products
+  })).insertedId;
+  const order = (await (await collectionOrders.aggregate([
+   // { $match: '' },
+    { $unwind : '$products' },
+    {
+      $lookup:
+        {
+          from: 'products',
+          localField: 'products.productId',
+          foreignField: '_id',
+          as: 'product-data'
+        }
+    },
+    { $unwind: '$product-data' },
+    { $addFields: { 'products.product': '$product-data' } },
+    { $addFields: { 'products.product.qty': '$products.qty' } },
+    { $group: {
+      _id: '$_id',
+      userId: { $first: '$userId' },
+      client: { $first: '$client' },
+      products: { $push: '$products.product' },
+      status: { $first: '$status' },
+    }}
+  ])).toArray())[0];
+  resp.send(order);
+}
+
 module.exports = {
   getOrders,
   getOrderById,
+  addOrder,
 }

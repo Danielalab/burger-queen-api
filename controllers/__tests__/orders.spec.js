@@ -250,10 +250,12 @@ describe('addOrder', () => {
     const resp = {
       send: (response) => {
         expect(response.userId).toBe('test123456');
-        expect(response.name).toBe('Ana');
+        expect(response.client).toBe('Ana');
         expect(response.products.length).toBe(2);
         expect(response.products[0].name).toBe('Jugos de frutas natural');
+        expect(response.products[0].qty).toBe(2);
         expect(response.products[1].name).toBe('Hamburguesa simple');
+        expect(response.products[1].qty).toBe(1);
         done();
       }
     }
