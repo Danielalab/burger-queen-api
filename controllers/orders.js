@@ -21,6 +21,24 @@ const getOrders = async (req, resp, next) => {
   resp.send(orders);
 }
 
+const getOrderById = async (req, resp, next) => {
+  const { orderId } = req.params;
+  const collectionOrders = (await db()).collection('orders');
+  let query;
+  try {
+    query = { _id: new ObjectId(orderId)};
+  } catch (error) {
+    console.log('entre al catch', orderId)
+    return next(404); 
+  }
+  const order = await collectionOrders.findOne(query);
+  if (!order) {
+    return next(404);
+  }
+  resp.send(order);
+}
+
 module.exports = {
   getOrders,
+  getOrderById,
 }

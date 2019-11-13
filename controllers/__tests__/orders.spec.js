@@ -167,14 +167,14 @@ describe('getOrderById', () => {
   it('Deberia obtener un error 404 si el usuario no existe', (done) => {
     const req = {
       params: {
-        orderId: '2dc33b22c2222222222222a'
+        orderId: '5dc99b50c5841032222222a2'
       },
     }
     const next = (code) => {
       expect(code).toBe(404);
       done();
     };
-    getProductById(req, {}, next);
+    getOrderById(req, {}, next);
   })
 
   it('Deberia obtener un error 404 si el ID no es valido', (done) => {
@@ -187,6 +187,6 @@ describe('getOrderById', () => {
       expect(code).toBe(404);
       done();
     };
-    getProductById(req, {}, next);
+    getOrderById(req, {}, next);
   })
 })
