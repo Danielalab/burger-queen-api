@@ -10,10 +10,10 @@ const getOrders = async (req, resp, next) => {
   const numberOfDocumentsToSkip = (parseInt(page, 10) * parseInt(limit, 10)) - parseInt(limit, 10);
   const collectionOrders = (await db()).collection('orders');
   const numberOfDocuments = await collectionOrders.countDocuments();
-  const orders = (await collectionOrders.find()
-    .limit(parseInt(limit, 10))
-    .skip(numberOfDocumentsToSkip)
-    .toArray());
+  const orders = (await getDataOfEachProductOfTheOrder(collectionOrders, [
+    { $limit: parseInt(limit, 10) },
+    { $skip: numberOfDocumentsToSkip }
+  ]));
   const link = getPagination({
     collectionName: 'orders',
     numberOfDocuments,
@@ -37,7 +37,8 @@ const getOrderById = async (req, resp, next) => {
   if (!order) {
     return next(404);
   }
-  resp.send(order);
+  const orderDetail = (await getDataOfEachProductOfTheOrder(collectionOrders, [{ $match: query }]))[0];
+  resp.send(orderDetail);
 }
 
 const addOrder = async (req, resp, next) => {
@@ -52,7 +53,7 @@ const addOrder = async (req, resp, next) => {
     status,
     products
   })).insertedId;
-  const order = await getDataOfEachProductOfTheOrder(collectionOrders, orderId);
+  const order = (await getDataOfEachProductOfTheOrder(collectionOrders, [{ $match: { _id: new ObjectId(orderId) } }]))[0];
   resp.send(order);
 }
 

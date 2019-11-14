@@ -10,9 +10,9 @@ const getPagination = ({ collectionName, numberOfDocuments, limit, currentPage }
   }
 };
 
-const getDataOfEachProductOfTheOrder = async (collectionOrders, orderId) => {
+const getDataOfEachProductOfTheOrder = async (collectionOrders, query = []) => {
   return (await (await collectionOrders.aggregate([
-    { $match: { _id: new ObjectId(orderId) } },
+    ...query,
     { $unwind : '$products' },
     {
       $lookup:
@@ -32,8 +32,9 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, orderId) => {
       client: { $first: '$client' },
       products: { $push: '$products.product' },
       status: { $first: '$status' },
-    }}
-  ])).toArray())[0];
+    }},
+    { $sort: { _id: 1 } }
+  ])).toArray());
 }
 
 module.exports = {
