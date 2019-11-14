@@ -1,6 +1,9 @@
 const { ObjectId } = require('mongodb');
 const db = require('../libs/connectdb');
-const { getPagination } = require('./utils');
+const {
+  getPagination,
+  getDataOfEachProductOfTheOrder
+} = require('./utils');
 
 const getOrders = async (req, resp, next) => {
   const { page = 1, limit = 10 } = req.query;
@@ -49,29 +52,7 @@ const addOrder = async (req, resp, next) => {
     status,
     products
   })).insertedId;
-  const order = (await (await collectionOrders.aggregate([
-   // { $match: '' },
-    { $unwind : '$products' },
-    {
-      $lookup:
-        {
-          from: 'products',
-          localField: 'products.productId',
-          foreignField: '_id',
-          as: 'product-data'
-        }
-    },
-    { $unwind: '$product-data' },
-    { $addFields: { 'products.product': '$product-data' } },
-    { $addFields: { 'products.product.qty': '$products.qty' } },
-    { $group: {
-      _id: '$_id',
-      userId: { $first: '$userId' },
-      client: { $first: '$client' },
-      products: { $push: '$products.product' },
-      status: { $first: '$status' },
-    }}
-  ])).toArray())[0];
+  const order = await getDataOfEachProductOfTheOrder(collectionOrders, orderId);
   resp.send(order);
 }
 

@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 const getPagination = ({ collectionName, numberOfDocuments, limit, currentPage }) => {
   const totalPages = Math.ceil(numberOfDocuments / limit);
   return {
@@ -8,6 +10,33 @@ const getPagination = ({ collectionName, numberOfDocuments, limit, currentPage }
   }
 };
 
+const getDataOfEachProductOfTheOrder = async (collectionOrders, orderId) => {
+  return (await (await collectionOrders.aggregate([
+    { $match: { _id: new ObjectId(orderId) } },
+    { $unwind : '$products' },
+    {
+      $lookup:
+        {
+          from: 'products',
+          localField: 'products.productId',
+          foreignField: '_id',
+          as: 'product-data'
+        }
+    },
+    { $unwind: '$product-data' },
+    { $addFields: { 'products.product': '$product-data' } },
+    { $addFields: { 'products.product.qty': '$products.qty' } },
+    { $group: {
+      _id: '$_id',
+      userId: { $first: '$userId' },
+      client: { $first: '$client' },
+      products: { $push: '$products.product' },
+      status: { $first: '$status' },
+    }}
+  ])).toArray())[0];
+}
+
 module.exports = {
   getPagination,
+  getDataOfEachProductOfTheOrder,
 };
