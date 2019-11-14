@@ -57,8 +57,26 @@ const addOrder = async (req, resp, next) => {
   resp.send(order);
 }
 
+const deleteOrder = async (req, resp, next) => {
+  const { orderId } = req.params;
+  let query;
+  try {
+    query = { _id: new ObjectId(orderId) };
+  } catch (error) {
+    return next(404);
+  }
+  const collectionOrders = (await db()).collection('orders');
+  const order = await collectionOrders.findOne(query);
+  if (!order) {
+    return next(404);
+  }
+  const orderDetail = (await getDataOfEachProductOfTheOrder(collectionOrders, [{ $match: query }]))[0];
+  resp.send(orderDetail);
+}
+
 module.exports = {
   getOrders,
   getOrderById,
   addOrder,
+  deleteOrder,
 }
