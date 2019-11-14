@@ -16,23 +16,11 @@ describe('getOrders', () => {
         products: [
           {
             qty: 2,
-            product: {
-              name: 'Jugos de frutas natural',
-              price: 7,
-              image: 'http://jugo.img',
-              type: 'bebidas',
-              dateEntry: new Date(),
-            }
+            productId: '' 
           },
           {
             qty: 1,
-            product: {
-              name: 'Hamburguesa simple',
-              price: 10,
-              image: 'http://burger-simple.img',
-              type: 'hamburguesas',
-              dateEntry: new Date(),
-            }
+            productId: ''
           }
         ],
         status: 'pending',
@@ -44,13 +32,7 @@ describe('getOrders', () => {
         products: [
           {
             qty: 1,
-            product: {
-              name: 'Hamburguesa doble',
-              price: 15,
-              image: 'http://burger-double.img',
-              type: 'hamburguesas',
-              dateEntry: new Date(),
-            }
+            productId: ''
           }
         ],
         status: 'delivered',
@@ -99,23 +81,11 @@ describe('getOrderById', () => {
         products: [
           {
             qty: 2,
-            product: {
-              name: 'Jugos de frutas natural',
-              price: 7,
-              image: 'http://jugo.img',
-              type: 'bebidas',
-              dateEntry: new Date(),
-            }
+            productId: ''
           },
           {
             qty: 1,
-            product: {
-              name: 'Hamburguesa simple',
-              price: 10,
-              image: 'http://burger-simple.img',
-              type: 'hamburguesas',
-              dateEntry: new Date(),
-            }
+            productId: ''
           }
         ],
         status: 'pending',
@@ -127,13 +97,7 @@ describe('getOrderById', () => {
         products: [
           {
             qty: 1,
-            product: {
-              name: 'Hamburguesa doble',
-              price: 15,
-              image: 'http://burger-double.img',
-              type: 'hamburguesas',
-              dateEntry: new Date(),
-            }
+            productId: ''
           }
         ],
         status: 'delivered',
