@@ -6,44 +6,76 @@ const {
 
 const db = require('../../libs/connectdb');
 
+const productsData = [
+  {
+    name: 'Hamburguesa simple',
+    price: 10,
+    image: 'http://burger-simple.img',
+    type: 'hamburguesas',
+    dateEntry: new Date(),
+  },
+  {
+    name: 'Hamburguesa doble',
+    price: 15,
+    image: 'http://burger-double.img',
+    type: 'hamburguesas',
+    dateEntry: new Date(),
+  },
+  {
+    name: 'Jugos de frutas natural',
+    price: 7,
+    image: 'http://jugo.img',
+    type: 'bebidas',
+    dateEntry: new Date(),
+  }
+];
+
+const ordersFake = [
+  {
+    userId: 'test123456',
+    client: 'Ana',
+    products: [
+      {
+        qty: 2,
+        productId: '' 
+      },
+      {
+        qty: 1,
+        productId: ''
+      }
+    ],
+    status: 'pending',
+    dateEntry: new Date(),
+  },
+  {
+    userId: 'testuserfake',
+    client: 'Ivan',
+    products: [
+      {
+        qty: 1,
+        productId: ''
+      }
+    ],
+    status: 'delivered',
+    dateEntry: new Date(),
+    dateProcessed: new Date()
+  },
+];
+
+const insertDocumentsToCollection = async (nameCollection, data) =>
+  (await db()).collection(nameCollection).insertMany(data);
+
+const removeAllDocumentsFromTheCollection = async (nameCollection) =>
+  (await db()).collection(nameCollection).deleteMany({});
+
 describe('getOrders', () => {
   beforeAll(async () => {
     await db();
-    await (await db()).collection('orders').insertMany([
-      {
-        userId: 'test123456',
-        client: 'Ana',
-        products: [
-          {
-            qty: 2,
-            productId: '' 
-          },
-          {
-            qty: 1,
-            productId: ''
-          }
-        ],
-        status: 'pending',
-        dateEntry: new Date(),
-      },
-      {
-        userId: 'testuserfake',
-        client: 'Ivan',
-        products: [
-          {
-            qty: 1,
-            productId: ''
-          }
-        ],
-        status: 'delivered',
-        dateEntry: new Date(),
-        dateProcessed: new Date()
-      },
-    ])
+    await insertDocumentsToCollection('orders', ordersFake);
   })
 
   afterAll(async() => {
-    await (await db()).collection('orders').deleteMany({});
+    await removeAllDocumentsFromTheCollection('orders');
     await db().close();
   })
 
@@ -74,41 +106,11 @@ describe('getOrderById', () => {
   let orders;
   beforeAll(async () => {
     await db();
-    orders = await (await db()).collection('orders').insertMany([
-      {
-        userId: 'test123456',
-        client: 'Ana',
-        products: [
-          {
-            qty: 2,
-            productId: ''
-          },
-          {
-            qty: 1,
-            productId: ''
-          }
-        ],
-        status: 'pending',
-        dateEntry: new Date(),
-      },
-      {
-        userId: 'testuserfake',
-        client: 'Ivan',
-        products: [
-          {
-            qty: 1,
-            productId: ''
-          }
-        ],
-        status: 'delivered',
-        dateEntry: new Date(),
-        dateProcessed: new Date()
-      },
-    ])
+    orders = await insertDocumentsToCollection('orders', ordersFake);
   })
 
   afterAll(async() => {
-    await (await db()).collection('orders').deleteMany({});
+    await removeAllDocumentsFromTheCollection('orders');
     await db().close();
   })
 
@@ -160,34 +162,11 @@ describe('addOrder', () => {
   let products;
   beforeAll(async () => {
     await db();
-    const collectionProducts = (await db()).collection('products');
-    products = await collectionProducts.insertMany([
-      {
-        name: 'Hamburguesa simple',
-        price: 10,
-        image: 'http://burger-simple.img',
-        type: 'hamburguesas',
-        dateEntry: new Date(),
-      },
-      {
-        name: 'Hamburguesa doble',
-        price: 15,
-        image: 'http://burger-double.img',
-        type: 'hamburguesas',
-        dateEntry: new Date(),
-      },
-      {
-        name: 'Jugos de frutas natural',
-        price: 7,
-        image: 'http://jugo.img',
-        type: 'bebidas',
-        dateEntry: new Date(),
-      }
-    ]);
+    products = await insertDocumentsToCollection('products', productsData);
   })
 
   afterAll(async() => {
-    await (await db()).collection(products).deleteMany({});
+    await removeAllDocumentsFromTheCollection('orders');
     await db().close();
   })
 
