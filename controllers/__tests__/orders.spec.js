@@ -6,6 +6,12 @@ const {
 
 const db = require('../../libs/connectdb');
 
+const insertDocumentsToCollection = async (nameCollection, data) =>
+  (await db()).collection(nameCollection).insertMany(data);
+
+const removeAllDocumentsFromTheCollection = async (nameCollection) =>
+  (await db()).collection(nameCollection).deleteMany({});
+
 const productsData = [
   {
     name: 'Hamburguesa simple',
@@ -30,51 +36,46 @@ const productsData = [
   }
 ];
 
-const ordersFake = [
-  {
-    userId: 'test123456',
-    client: 'Ana',
-    products: [
-      {
-        qty: 2,
-        productId: '' 
-      },
-      {
-        qty: 1,
-        productId: ''
-      }
-    ],
-    status: 'pending',
-    dateEntry: new Date(),
-  },
-  {
-    userId: 'testuserfake',
-    client: 'Ivan',
-    products: [
-      {
-        qty: 1,
-        productId: ''
-      }
-    ],
-    status: 'delivered',
-    dateEntry: new Date(),
-    dateProcessed: new Date()
-  },
-];
-
-const insertDocumentsToCollection = async (nameCollection, data) =>
-  (await db()).collection(nameCollection).insertMany(data);
-
-const removeAllDocumentsFromTheCollection = async (nameCollection) =>
-  (await db()).collection(nameCollection).deleteMany({});
-
 describe('getOrders', () => {
   beforeAll(async () => {
     await db();
+    const productsIds = (await insertDocumentsToCollection('products', productsData)).insertedIds;
+    const ordersFake = [
+      {
+        userId: 'test123456',
+        client: 'Ana',
+        products: [
+          {
+            qty: 2,
+            productId: productsIds['2'],
+          },
+          {
+            qty: 1,
+            productId: productsIds['0'],
+          }
+        ],
+        status: 'pending',
+        dateEntry: new Date(),
+      },
+      {
+        userId: 'testuserfake',
+        client: 'Ivan',
+        products: [
+          {
+            qty: 1,
+            productId: productsIds['1'],
+          }
+        ],
+        status: 'delivered',
+        dateEntry: new Date(),
+        dateProcessed: new Date()
+      },
+    ];
     await insertDocumentsToCollection('orders', ordersFake);
   })
 
   afterAll(async() => {
+    await removeAllDocumentsFromTheCollection('products');
     await removeAllDocumentsFromTheCollection('orders');
     await db().close();
   })
@@ -105,11 +106,43 @@ describe('getOrders', () => {
 describe('getOrderById', () => {
   let orders;
   beforeAll(async () => {
-    await db();
+    const productsIds = (await insertDocumentsToCollection('products', productsData)).insertedIds;
+    const ordersFake = [
+      {
+        userId: 'test123456',
+        client: 'Ana',
+        products: [
+          {
+            qty: 2,
+            productId: productsIds['2'],
+          },
+          {
+            qty: 1,
+            productId: productsIds['0'],
+          }
+        ],
+        status: 'pending',
+        dateEntry: new Date(),
+      },
+      {
+        userId: 'testuserfake',
+        client: 'Ivan',
+        products: [
+          {
+            qty: 1,
+            productId: productsIds['1'],
+          }
+        ],
+        status: 'delivered',
+        dateEntry: new Date(),
+        dateProcessed: new Date()
+      },
+    ];
     orders = await insertDocumentsToCollection('orders', ordersFake);
   })
 
   afterAll(async() => {
+    await removeAllDocumentsFromTheCollection('products');
     await removeAllDocumentsFromTheCollection('orders');
     await db().close();
   })
@@ -166,6 +199,7 @@ describe('addOrder', () => {
   })
 
   afterAll(async() => {
+    await removeAllDocumentsFromTheCollection('products');
     await removeAllDocumentsFromTheCollection('orders');
     await db().close();
   })
