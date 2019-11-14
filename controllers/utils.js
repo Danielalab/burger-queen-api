@@ -10,9 +10,9 @@ const getPagination = ({ collectionName, numberOfDocuments, limit, currentPage }
   }
 };
 
-const getDataOfEachProductOfTheOrder = async (collectionOrders, query = []) => {
+const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) => {
   return (await (await collectionOrders.aggregate([
-    ...query,
+    ...queries,
     { $unwind : '$products' },
     {
       $lookup:

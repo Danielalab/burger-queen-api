@@ -2,6 +2,7 @@ const {
   getOrders,
   getOrderById,
   addOrder,
+  deleteOrder,
 } = require('../orders');
 
 const db = require('../../libs/connectdb');
@@ -164,7 +165,7 @@ describe('getOrderById', () => {
     getOrderById(req, resp);
   })
 
-  it('Deberia obtener un error 404 si el usuario no existe', (done) => {
+  it('Deberia obtener un error 404 si las order no existe', (done) => {
     const req = {
       params: {
         orderId: '5dc99b50c5841032222222a2'
@@ -298,4 +299,77 @@ describe('addOrder', () => {
     addOrder(req, {}, next);
   })
 
+})
+
+describe('deleteOrder', () => {
+  let orders;
+  beforeAll(async () => {
+    const productsIds = (await insertDocumentsToCollection('products', productsData)).insertedIds;
+    const ordersFake = [
+      {
+        userId: 'testuserfake',
+        client: 'Ivan',
+        products: [
+          {
+            qty: 1,
+            productId: productsIds['1'],
+          }
+        ],
+        status: 'delivered',
+        dateEntry: new Date(),
+        dateProcessed: new Date()
+      },
+    ];
+    orders = await insertDocumentsToCollection('orders', ordersFake);
+  })
+
+  afterAll(async() => {
+    await removeAllDocumentsFromTheCollection('products');
+    await removeAllDocumentsFromTheCollection('orders');
+    await db().close();
+  })
+
+  it('Deberia de poder eliminar una orden por su id', (done) => {
+    const orderId = orders.insertedIds['0'];
+    const req = {
+      params: {
+        orderId,
+      }
+    };
+    const resp = {
+      send: (response) => {
+        expect(response.client).toBe('Ivan');
+        expect(response.products.length).toBe(1);
+        expect(response.products[0].name).toBe('Hamburguesa doble');
+        done();
+      }
+    };
+    deleteOrder(req, resp);
+  });
+
+  it('Deberia obtener un error 404 si las order no existe', (done) => {
+    const req = {
+      params: {
+        orderId: '5dc99b50c5841032222222a2'
+      },
+    }
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
+    deleteOrder(req, {}, next);
+  })
+
+  it('Deberia obtener un error 404 si el ID no es valido', (done) => {
+    const req = {
+      params: {
+        orderId: 'fakeorderid'
+      },
+    }
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
+    getOrderById(req, {}, next);
+  })
 })
