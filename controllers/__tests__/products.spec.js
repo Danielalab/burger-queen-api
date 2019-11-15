@@ -115,9 +115,22 @@ describe('getProductById', () => {
   it('Deberia de poder obtener un error 404 si no existe el producto', (done) => {
     const req = {
       params: {
-        uid: '5dc99b50c5841032222222a2',
+        productId: '5dc99b50c5841032222222a2',
       }
     };
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
+    getProductById(req, {}, next);
+  })
+
+  it('Deberia obtener un error 404 si el ID no es valido', (done) => {
+    const req = {
+      params: {
+        productId: 'fakeid'
+      },
+    }
     const next = (code) => {
       expect(code).toBe(404);
       done();
@@ -281,6 +294,19 @@ describe('deleteProduct', () => {
     };
     deleteProduct(req, {}, next);
   })
+
+  it('Deberia obtener un error 404 si el ID no es valido', (done) => {
+    const req = {
+      params: {
+        productId: 'fakeid'
+      },
+    }
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
+    deleteProduct(req, {}, next);
+  })
 })
 
 describe('updateProduct', () => {
@@ -341,6 +367,23 @@ describe('updateProduct', () => {
     updateProduct(req, {}, next);
   })
 
+  it('Deberia de mostar un error 400 si el tipo de dato de price es diferente de number', (done) => {
+    const req = {
+      params: {
+        productId: '5ca99b50c5841032222222a2',
+      },
+      body: {
+        price: '8'
+      }
+    };
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    };
+
+    updateProduct(req, {}, next);
+  })
+
   it('Deberia de mostrar un error 404 si no existe el producto', (done) => {
     const req = {
       params: {
@@ -356,6 +399,22 @@ describe('updateProduct', () => {
       done();
     };
 
+    updateProduct(req, {}, next);
+  })
+
+  it('Deberia obtener un error 404 si el ID no es valido', (done) => {
+    const req = {
+      params: {
+        productId: 'fakeid'
+      },
+      body: {
+        price: 7,
+      }
+    }
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
     updateProduct(req, {}, next);
   })
 })
