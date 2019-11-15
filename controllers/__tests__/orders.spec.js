@@ -3,6 +3,7 @@ const {
   getOrderById,
   addOrder,
   deleteOrder,
+  updateOrder
 } = require('../orders');
 
 const db = require('../../libs/connectdb');
@@ -363,14 +364,14 @@ describe('deleteOrder', () => {
   it('Deberia obtener un error 404 si el ID no es valido', (done) => {
     const req = {
       params: {
-        orderId: 'fakeorderid'
+        orderId: 'fakeid'
       },
     }
     const next = (code) => {
       expect(code).toBe(404);
       done();
     };
-    getOrderById(req, {}, next);
+    deleteOrder(req, {}, next);
   })
 })
 
@@ -420,7 +421,7 @@ describe('updateOrder', () => {
         done();
       }
     };
-    deleteOrder(req, resp);
+    updateOrder(req, resp);
   });
 
   it('Deberia obtener un error 404 si las order no existe', (done) => {
@@ -433,7 +434,7 @@ describe('updateOrder', () => {
       expect(code).toBe(404);
       done();
     };
-    deleteOrder(req, {}, next);
+    updateOrder(req, {}, next);
   })
 
   it('Deberia obtener un error 404 si el ID no es valido', (done) => {
@@ -446,6 +447,6 @@ describe('updateOrder', () => {
       expect(code).toBe(404);
       done();
     };
-    getOrderById(req, {}, next);
+    updateOrder(req, {}, next);
   })
 })
