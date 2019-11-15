@@ -24,14 +24,15 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) =>
         }
     },
     { $unwind: '$product-data' },
-    { $addFields: { 'products.product': '$product-data' } },
-    { $addFields: { 'products.product.qty': '$products.qty' } },
+    { $addFields: { 'products.data.product': '$product-data' } },
+    { $addFields: { 'products.data.qty': '$products.qty' } },
     { $group: {
       _id: '$_id',
       userId: { $first: '$userId' },
       client: { $first: '$client' },
-      products: { $push: '$products.product' },
+      products: { $push: '$products.data' },
       status: { $first: '$status' },
+      dateEntry: { $first: '$dateEntry' },
     }},
     { $sort: { _id: 1 } }
   ])).toArray());

@@ -49,11 +49,11 @@ describe('getOrders', () => {
         products: [
           {
             qty: 2,
-            productId: productsIds['2'],
+            productId: productsIds['2'].toString(),
           },
           {
             qty: 1,
-            productId: productsIds['0'],
+            productId: productsIds['0'].toString(),
           }
         ],
         status: 'pending',
@@ -65,7 +65,7 @@ describe('getOrders', () => {
         products: [
           {
             qty: 1,
-            productId: productsIds['1'],
+            productId: productsIds['1'].toString(),
           }
         ],
         status: 'delivered',
@@ -116,11 +116,11 @@ describe('getOrderById', () => {
         products: [
           {
             qty: 2,
-            productId: productsIds['2'],
+            productId: productsIds['2'].toString(),
           },
           {
             qty: 1,
-            productId: productsIds['0'],
+            productId: productsIds['0'].toString(),
           }
         ],
         status: 'pending',
@@ -132,7 +132,7 @@ describe('getOrderById', () => {
         products: [
           {
             qty: 1,
-            productId: productsIds['1'],
+            productId: productsIds['1'].toString(),
           }
         ],
         status: 'delivered',
@@ -193,7 +193,7 @@ describe('getOrderById', () => {
   })
 })
 
-describe('addOrder', () => {
+describe.only('addOrder', () => {
   let products;
   beforeAll(async () => {
     await db();
@@ -215,11 +215,11 @@ describe('addOrder', () => {
         products: [
           {
             qty: 2,
-            productId: productsIds['2'],
+            productId: productsIds['2'].toString(),
           },
           {
             qty: 1,
-            productId: productsIds['0'],
+            productId: productsIds['0'].toString(),
           }
         ],
         status: 'pending',
@@ -250,11 +250,11 @@ describe('addOrder', () => {
         products: [
           {
             qty: 2,
-            productId: productsIds['2'],
+            productId: productsIds['2'].toString(),
           },
           {
             qty: 1,
-            productId: productsIds['0'],
+            productId: productsIds['0'].toString(),
           }
         ],
         status: 'pending',
@@ -313,7 +313,7 @@ describe('deleteOrder', () => {
         products: [
           {
             qty: 1,
-            productId: productsIds['1'],
+            productId: productsIds['1'].toString(),
           }
         ],
         status: 'delivered',
@@ -386,7 +386,7 @@ describe('updateOrder', () => {
         products: [
           {
             qty: 1,
-            productId: productsIds['1'],
+            productId: productsIds['1'].toString(),
           }
         ],
         status: 'delivered',

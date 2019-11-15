@@ -51,7 +51,8 @@ const addOrder = async (req, resp, next) => {
     userId,
     client,
     status,
-    products
+    products: products.map(product => ({ ...product, productId: new ObjectId(product.productId) })),
+    dateEntry: new Date(),
   })).insertedId;
   const order = (await getDataOfEachProductOfTheOrder(collectionOrders, [{ $match: { _id: new ObjectId(orderId) } }]))[0];
   resp.send(order);
