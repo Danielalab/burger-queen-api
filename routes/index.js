@@ -28,6 +28,6 @@ module.exports = (app, next) => register(app, [
   auth,
   users,
   products,
-  /* orders, */
+  orders,
   root,
 ], next);

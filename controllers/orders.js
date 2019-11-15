@@ -42,8 +42,8 @@ const getOrderById = async (req, resp, next) => {
 }
 
 const addOrder = async (req, resp, next) => {
-  const { userId, client, products, status } = req.body;
-  if (!userId || !client || !(products.length) || !status) {
+  const { userId, client = '', products, status = '' } = req.body;
+  if (!userId || !(products.length)) {
     return next(400);
   }
   const collectionOrders = (await db()).collection('orders');
