@@ -306,7 +306,7 @@ describe('PUT /orders/:orderid', () => {
       })
       .then(json => fetchAsTestUser(`/orders/${json._id}`))
       .then(resp => resp.json())
-      .then(json => console.log(json) || fetchAsAdmin(`/orders/${json._id}`, { method: 'PUT' }))
+      .then(json => fetchAsAdmin(`/orders/${json._id}`, { method: 'PUT' }))
       .then(resp => expect(resp.status).toBe(400))
   ));
 
@@ -424,7 +424,7 @@ describe('PUT /orders/:orderid', () => {
       .then(([product, user]) => fetchAsTestUser('/orders', {
         method: 'POST',
         body: { products: [{ productId: product._id, qty: 5 }], userId: user._id },
-      })) { $unwind: '$product-data' },
+      }))
       .then((resp) => {
         expect(resp.status).toBe(200);
         return resp.json();

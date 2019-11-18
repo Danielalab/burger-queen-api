@@ -71,6 +71,7 @@ const deleteOrder = async (req, resp, next) => {
   if (!order) {
     return next(404);
   }
+  await collectionOrders.deleteOne(query);
   const orderDetail = (await getDataOfEachProductOfTheOrder(collectionOrders, [{ $match: query }]))[0];
   resp.send(orderDetail);
 }
