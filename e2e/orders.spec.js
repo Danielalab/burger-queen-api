@@ -278,7 +278,7 @@ describe('PUT /orders/:orderid', () => {
   it('should fail with 404 when not found', () => (
     fetchAsAdmin('/orders/xxx', {
       method: 'PUT',
-      body: { state: 'canceled' },
+      body: { status: 'canceled' },
     })
       .then(resp => expect(resp.status).toBe(404))
   ));
@@ -305,7 +305,8 @@ describe('PUT /orders/:orderid', () => {
         return resp.json();
       })
       .then(json => fetchAsTestUser(`/orders/${json._id}`))
-      .then(json => fetchAsAdmin(`/orders/${json._id}`, { method: 'PUT' }))
+      .then(resp => resp.json())
+      .then(json => console.log(json) || fetchAsAdmin(`/orders/${json._id}`, { method: 'PUT' }))
       .then(resp => expect(resp.status).toBe(400))
   ));
 
@@ -423,7 +424,7 @@ describe('PUT /orders/:orderid', () => {
       .then(([product, user]) => fetchAsTestUser('/orders', {
         method: 'POST',
         body: { products: [{ productId: product._id, qty: 5 }], userId: user._id },
-      }))
+      })) { $unwind: '$product-data' },
       .then((resp) => {
         expect(resp.status).toBe(200);
         return resp.json();

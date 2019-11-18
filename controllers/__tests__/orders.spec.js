@@ -193,7 +193,7 @@ describe('getOrderById', () => {
   })
 })
 
-describe.only('addOrder', () => {
+describe('addOrder', () => {
   let products;
   beforeAll(async () => {
     await db();
@@ -231,9 +231,9 @@ describe.only('addOrder', () => {
         expect(response.userId).toBe('test123456');
         expect(response.client).toBe('Ana');
         expect(response.products.length).toBe(2);
-        expect(response.products[0].name).toBe('Jugos de frutas natural');
+        expect(response.products[0].product.name).toBe('Jugos de frutas natural');
         expect(response.products[0].qty).toBe(2);
-        expect(response.products[1].name).toBe('Hamburguesa simple');
+        expect(response.products[1].product.name).toBe('Hamburguesa simple');
         expect(response.products[1].qty).toBe(1);
         done();
       }
@@ -341,7 +341,7 @@ describe('deleteOrder', () => {
       send: (response) => {
         expect(response.client).toBe('Ivan');
         expect(response.products.length).toBe(1);
-        expect(response.products[0].name).toBe('Hamburguesa doble');
+        expect(response.products[0].product.name).toBe('Hamburguesa doble');
         done();
       }
     };
@@ -375,7 +375,7 @@ describe('deleteOrder', () => {
   })
 })
 
-describe('updateOrder', () => {
+describe.only('updateOrder', () => {
   let orders;
   beforeAll(async () => {
     const productsIds = (await insertDocumentsToCollection('products', productsData)).insertedIds;
@@ -417,7 +417,8 @@ describe('updateOrder', () => {
       send: (response) => {
         expect(response.client).toBe('Ivan');
         expect(response.products.length).toBe(1);
-        expect(response.products[0].name).toBe('Hamburguesa doble');
+        expect(response.products[0].product.name).toBe('Hamburguesa doble');
+        expect(response.products[0].product.client).toBe('clientUpdate');
         done();
       }
     };

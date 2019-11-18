@@ -25,11 +25,11 @@ const getOrders = async (req, resp, next) => {
 }
 
 const getOrderById = async (req, resp, next) => {
-  const { orderId } = req.params;
+  const { orderid } = req.params;
   const collectionOrders = (await db()).collection('orders');
   let query;
   try {
-    query = { _id: new ObjectId(orderId)};
+    query = { _id: new ObjectId(orderid)};
   } catch (error) {
     return next(404); 
   }
@@ -38,11 +38,11 @@ const getOrderById = async (req, resp, next) => {
     return next(404);
   }
   const orderDetail = (await getDataOfEachProductOfTheOrder(collectionOrders, [{ $match: query }]))[0];
-  resp.send(orderDetail);
+  resp.send({ ... orderDetail, _id: orderid, });
 }
 
 const addOrder = async (req, resp, next) => {
-  const { userId, client = '', products, status = '' } = req.body;
+  const { userId, client = '', products, status = 'pending' } = req.body;
   if (!userId || !(products.length)) {
     return next(400);
   }
@@ -55,14 +55,14 @@ const addOrder = async (req, resp, next) => {
     dateEntry: new Date(),
   })).insertedId;
   const order = (await getDataOfEachProductOfTheOrder(collectionOrders, [{ $match: { _id: new ObjectId(orderId) } }]))[0];
-  resp.send(order);
+  resp.send({ ... order, _id: orderId });
 }
 
 const deleteOrder = async (req, resp, next) => {
-  const { orderId } = req.params;
+  const { orderid } = req.params;
   let query;
   try {
-    query = { _id: new ObjectId(orderId) };
+    query = { _id: new ObjectId(orderid) };
   } catch (error) {
     return next(404);
   }
@@ -76,19 +76,39 @@ const deleteOrder = async (req, resp, next) => {
 }
 
 const updateOrder = async (req, resp, next) => {
-  const { orderId } = req.params;
+  const { orderid } = req.params;
+  const { userId, client, products = [], status } = req.body;
   let query;
   try {
-    query = { _id: new ObjectId(orderId) };
+    query = { _id: new ObjectId(orderid) };
   } catch (error) {
     return next(404);
+  }
+  if (!userId && !client && !products.length && !status) {
+    return next(400);
+  }
+  if (!['pending', 'preparing', 'canceled', 'delivering', 'delivered'].includes(status)) {
+    return next(400); 
   }
   const collectionOrders = (await db()).collection('orders'); 
   const order = await collectionOrders.findOne(query);
   if (!order) {
     return next(404);
   }
-  const orderDetail = (await getDataOfEachProductOfTheOrder(collectionOrders, [ { $match: query} ]))[0];
+  const propsUpdated = {
+    userId: userId || order.userId,
+    client: client || order.client,
+    products: products.length ? products : order.products,
+    status: status || order.status,
+  }
+  if (status === 'delivered') {
+    propsUpdated.dateProcessed = new Date();
+  }
+  await collectionOrders.updateOne(
+    query,
+    { $set: propsUpdated }
+  );
+  const orderDetail = (await getDataOfEachProductOfTheOrder(collectionOrders, [ { $match: query} ], status === 'delivered'))[0];
   resp.send(orderDetail);
 }
 
