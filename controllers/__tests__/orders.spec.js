@@ -386,7 +386,7 @@ describe.only('updateOrder', () => {
         products: [
           {
             qty: 1,
-            productId: productsIds['1'].toString(),
+            productId: productsIds['1'],
           }
         ],
         status: 'delivered',
@@ -407,7 +407,7 @@ describe.only('updateOrder', () => {
     const orderId = orders.insertedIds['0'];
     const req = {
       params: {
-        orderId,
+        orderid: orderId.toString(),
       },
       body: {
         client: 'clientUpdate',
@@ -415,21 +415,37 @@ describe.only('updateOrder', () => {
     };
     const resp = {
       send: (response) => {
-        expect(response.client).toBe('Ivan');
+        expect(response.client).toBe('clientUpdate');
         expect(response.products.length).toBe(1);
         expect(response.products[0].product.name).toBe('Hamburguesa doble');
-        expect(response.products[0].product.client).toBe('clientUpdate');
         done();
       }
     };
     updateOrder(req, resp);
   });
 
+  it('Deberia obtener un error 400 si no se envian props', (done) => {
+    const req = {
+      params: {
+        orderid: '5dc99b50c5841032222222a2'
+      },
+      body: {}
+    }
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    };
+    updateOrder(req, {}, next);
+  })
+
   it('Deberia obtener un error 404 si las order no existe', (done) => {
     const req = {
       params: {
-        orderId: '5dc99b50c5841032222222a2'
+        orderid: '5dc99b50c5841032222222a2'
       },
+      body: {
+        status: 'delivered'
+      }
     }
     const next = (code) => {
       expect(code).toBe(404);
@@ -441,8 +457,9 @@ describe.only('updateOrder', () => {
   it('Deberia obtener un error 404 si el ID no es valido', (done) => {
     const req = {
       params: {
-        orderId: 'fakeorderid'
+        orderid: 'fakeorderid'
       },
+      body: {}
     }
     const next = (code) => {
       expect(code).toBe(404);

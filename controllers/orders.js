@@ -88,7 +88,7 @@ const updateOrder = async (req, resp, next) => {
   if (!userId && !client && !products.length && !status) {
     return next(400);
   }
-  if (!['pending', 'preparing', 'canceled', 'delivering', 'delivered'].includes(status)) {
+  if (status && !['pending', 'preparing', 'canceled', 'delivering', 'delivered'].includes(status)) {
     return next(400); 
   }
   const collectionOrders = (await db()).collection('orders'); 
