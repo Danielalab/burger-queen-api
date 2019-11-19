@@ -114,7 +114,7 @@ const updateOrder = async (req, resp, next) => {
     query,
     { $set: propsUpdated }
   );
-  const orderDetail = (await getDataOfEachProductOfTheOrder(collectionOrders, [ { $match: query} ], status === 'delivered'))[0];
+  const orderDetail = (await getDataOfEachProductOfTheOrder(collectionOrders, [ { $match: query} ]))[0];
   resp.send(orderDetail);
 }
 

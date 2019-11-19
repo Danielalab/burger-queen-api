@@ -10,7 +10,7 @@ const getPagination = ({ collectionName, numberOfDocuments, limit, currentPage }
   }
 };
 
-const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = [], isDelivered = false) => {
+const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) => {
   const propsOrder = {
     _id: '$_id',
     userId: { $first: '$userId' },
@@ -18,11 +18,22 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = [], is
     products: { $push: '$products.data' },
     status: { $first: '$status' },
     dateEntry: { $first: '$dateEntry' },
+    dateProcessed: { $first: '$dateProcessed' }
   }
-  if (isDelivered) {
-    propsOrder.dateProcessed = { $first: '$dateProcessed' }
-  }
-  return (await (await collectionOrders.aggregate([
+  const cb = (order) => (
+    order.dateProcessed !== null ?
+      { ...order }
+      : {
+        _id: order._id,
+        userId: order.userId,
+        client: order.client,
+        products: order.products,
+        status: order.status,
+        dateEntry: order.dateEntry,
+      }
+  )
+
+  const specificOrderData = await (await (await collectionOrders.aggregate([
     ...queries,
     { $unwind : '$products' },
     {
@@ -39,7 +50,8 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = [], is
     { $addFields: { 'products.data.qty': '$products.qty' } },
     { $group: propsOrder },
     { $sort: { _id: 1 } }
-  ])).toArray());
+  ])).map(cb)).toArray();
+  return specificOrderData;
 }
 
 module.exports = {
