@@ -71,8 +71,8 @@ const deleteOrder = async (req, resp, next) => {
   if (!order) {
     return next(404);
   }
-  await collectionOrders.deleteOne(query);
   const orderDetail = (await getDataOfEachProductOfTheOrder(collectionOrders, [{ $match: query }]))[0];
+  await collectionOrders.deleteOne(query);
   resp.send(orderDetail);
 }
 
@@ -99,7 +99,12 @@ const updateOrder = async (req, resp, next) => {
   const propsUpdated = {
     userId: userId || order.userId,
     client: client || order.client,
-    products: products.length ? products : order.products,
+    products: products.length ?
+      products.map(product => ({
+        ...product,
+        productId: new ObjectId(product.productId)
+      }))
+        : order.products,
     status: status || order.status,
   }
   if (status === 'delivered') {

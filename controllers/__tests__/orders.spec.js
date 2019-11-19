@@ -49,11 +49,11 @@ describe('getOrders', () => {
         products: [
           {
             qty: 2,
-            productId: productsIds['2'].toString(),
+            productId: productsIds['2'],
           },
           {
             qty: 1,
-            productId: productsIds['0'].toString(),
+            productId: productsIds['0'],
           }
         ],
         status: 'pending',
@@ -65,7 +65,7 @@ describe('getOrders', () => {
         products: [
           {
             qty: 1,
-            productId: productsIds['1'].toString(),
+            productId: productsIds['1'],
           }
         ],
         status: 'delivered',
@@ -116,11 +116,11 @@ describe('getOrderById', () => {
         products: [
           {
             qty: 2,
-            productId: productsIds['2'].toString(),
+            productId: productsIds['2'],
           },
           {
             qty: 1,
-            productId: productsIds['0'].toString(),
+            productId: productsIds['0'],
           }
         ],
         status: 'pending',
@@ -152,11 +152,11 @@ describe('getOrderById', () => {
   it('Deberia de poder obtener una order por su id', (done) => {
     const orderId = orders.insertedIds['0'];
     const req = {
-      params: { orderId },
+      params: { orderid: orderId.toString() },
     }
     const resp = {
       send: (response) => {
-        expect(response._id).toEqual(orderId)
+        expect(response._id).toEqual(orderId.toString())
         expect(response.client).toBe('Ana');
         expect(response.products.length).toBe(2);
         expect(response.status).toBe('pending');
@@ -169,7 +169,7 @@ describe('getOrderById', () => {
   it('Deberia obtener un error 404 si las order no existe', (done) => {
     const req = {
       params: {
-        orderId: '5dc99b50c5841032222222a2'
+        orderid: '5dc99b50c5841032222222a2'
       },
     }
     const next = (code) => {
@@ -182,7 +182,7 @@ describe('getOrderById', () => {
   it('Deberia obtener un error 404 si el ID no es valido', (done) => {
     const req = {
       params: {
-        orderId: 'fakeorderid'
+        orderid: 'fakeorderid'
       },
     }
     const next = (code) => {
@@ -313,7 +313,7 @@ describe('deleteOrder', () => {
         products: [
           {
             qty: 1,
-            productId: productsIds['1'].toString(),
+            productId: productsIds['1'],
           }
         ],
         status: 'delivered',
@@ -334,7 +334,7 @@ describe('deleteOrder', () => {
     const orderId = orders.insertedIds['0'];
     const req = {
       params: {
-        orderId,
+        orderid: orderId.toString(),
       }
     };
     const resp = {
@@ -351,7 +351,7 @@ describe('deleteOrder', () => {
   it('Deberia obtener un error 404 si las order no existe', (done) => {
     const req = {
       params: {
-        orderId: '5dc99b50c5841032222222a2'
+        orderid: '5dc99b50c5841032222222a2'
       },
     }
     const next = (code) => {
@@ -364,7 +364,7 @@ describe('deleteOrder', () => {
   it('Deberia obtener un error 404 si el ID no es valido', (done) => {
     const req = {
       params: {
-        orderId: 'fakeid'
+        orderid: 'fakeid'
       },
     }
     const next = (code) => {
@@ -375,10 +375,11 @@ describe('deleteOrder', () => {
   })
 })
 
-describe.only('updateOrder', () => {
+describe('updateOrder', () => {
   let orders;
+  let productsIds;
   beforeAll(async () => {
-    const productsIds = (await insertDocumentsToCollection('products', productsData)).insertedIds;
+    productsIds = (await insertDocumentsToCollection('products', productsData)).insertedIds;
     const ordersFake = [
       {
         userId: 'testuserfake',
@@ -411,12 +412,41 @@ describe.only('updateOrder', () => {
       },
       body: {
         client: 'clientUpdate',
+        status: 'delivered',
+        userId: 'userfakeId',
       }
     };
     const resp = {
       send: (response) => {
         expect(response.client).toBe('clientUpdate');
+        expect(response.status).toBe('delivered');
         expect(response.products.length).toBe(1);
+        expect(response.products[0].product.name).toBe('Hamburguesa doble');
+        done();
+      }
+    };
+    updateOrder(req, resp);
+  });
+
+  it('Deberia de poder actualizar los productos de una order', (done) => {
+    const orderId = orders.insertedIds['0'];
+    const req = {
+      params: {
+        orderid: orderId.toString(),
+      },
+      body: {
+        products: [
+          {
+            qty: 3,
+            productId: productsIds['1'].toString(),
+          }
+        ],
+      }
+    };
+    const resp = {
+      send: (response) => {
+        expect(response.products.length).toBe(1);
+        expect(response.products[0].qty).toBe(3);
         expect(response.products[0].product.name).toBe('Hamburguesa doble');
         done();
       }
@@ -430,6 +460,22 @@ describe.only('updateOrder', () => {
         orderid: '5dc99b50c5841032222222a2'
       },
       body: {}
+    }
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    };
+    updateOrder(req, {}, next);
+  })
+
+  it('Deberia obtener un error 400 si envia mal la prop status', (done) => {
+    const req = {
+      params: {
+        orderid: '5dc99b50c5841032222222a2'
+      },
+      body: {
+        status: 'fake status'
+      }
     }
     const next = (code) => {
       expect(code).toBe(400);
