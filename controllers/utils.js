@@ -1,13 +1,13 @@
-const { ObjectId } = require('mongodb');
-
-const getPagination = ({ collectionName, numberOfDocuments, limit, currentPage }) => {
+const getPagination = ({
+  collectionName, numberOfDocuments, limit, currentPage,
+}) => {
   const totalPages = Math.ceil(numberOfDocuments / limit);
   return {
     first: `</${collectionName}?limit=${limit}&page=${1}>; rel="first"`,
     prev: `</${collectionName}?limit=${limit}&page=${currentPage - 1 === 0 ? 1 : currentPage - 1}>; rel="prev"`,
     next: `</${collectionName}?limit=${limit}&page=${currentPage + 1 > totalPages ? totalPages : currentPage + 1}>; rel="next"`,
     last: `</${collectionName}?limit=${limit}&page=${totalPages}>; rel="last"`,
-  }
+  };
 };
 
 const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) => {
@@ -18,11 +18,12 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) =>
     products: { $push: '$products.data' },
     status: { $first: '$status' },
     dateEntry: { $first: '$dateEntry' },
-    dateProcessed: { $first: '$dateProcessed' }
-  }
+    dateProcessed: { $first: '$dateProcessed' },
+  };
+
   const cb = (order) => (
-    order.dateProcessed !== null ?
-      { ...order }
+    order.dateProcessed !== null
+      ? { ...order }
       : {
         _id: order._id,
         userId: order.userId,
@@ -31,28 +32,29 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) =>
         status: order.status,
         dateEntry: order.dateEntry,
       }
-  )
+  );
 
   const specificOrderData = await (await (await collectionOrders.aggregate([
     ...queries,
-    { $unwind : '$products' },
+    { $unwind: '$products' },
     {
       $lookup:
         {
           from: 'products',
           localField: 'products.productId',
           foreignField: '_id',
-          as: 'product-data'
-        }
+          as: 'product-data',
+        },
     },
     { $unwind: '$product-data' },
     { $addFields: { 'products.data.product': '$product-data' } },
     { $addFields: { 'products.data.qty': '$products.qty' } },
     { $group: propsOrder },
-    { $sort: { _id: 1 } }
+    { $sort: { _id: 1 } },
   ])).map(cb)).toArray();
+
   return specificOrderData;
-}
+};
 
 module.exports = {
   getPagination,

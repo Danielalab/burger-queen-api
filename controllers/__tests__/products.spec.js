@@ -3,7 +3,7 @@ const {
   getProductById,
   addProduct,
   deleteProduct,
-  updateProduct
+  updateProduct,
 } = require('../products');
 
 const db = require('../../libs/connectdb');
@@ -33,14 +33,14 @@ describe('getProducts', () => {
         image: 'http://jugo.img',
         type: 'bebidas',
         dateEntry: new Date(),
-      }
+      },
     ]);
-  })
+  });
 
   afterAll(async () => {
     await (await db()).collection('products').deleteMany({});
     await db().close();
-  })
+  });
 
   it('Deberia de poder obtener los 3 productos', (done) => {
     const req = { query: {} };
@@ -54,10 +54,10 @@ describe('getProducts', () => {
         expect(nameHeader).toBe('link');
         expect(header).toBe('</products?limit=10&page=1>; rel="first", </products?limit=10&page=1>; rel="prev", </products?limit=10&page=1>; rel="next", </products?limit=10&page=1>; rel="last"');
         done();
-      }
-    }
+      },
+    };
     getProducts(req, resp);
-  })
+  });
 });
 
 describe('getProductById', () => {
@@ -86,68 +86,68 @@ describe('getProductById', () => {
         image: 'http://jugo.img',
         type: 'bebidas',
         dateEntry: new Date(),
-      }
+      },
     ]);
-  })
+  });
 
   afterAll(async () => {
     await (await db()).collection('products').deleteMany({});
     await db().close();
-  })
+  });
 
   it('Deberia de poder obtener un producto por su uid', (done) => {
     const idProduct = products.insertedIds['2'];
     const req = {
       params: {
         productId: idProduct,
-      }
+      },
     };
     const resp = {
       send: (response) => {
         expect(response._id).toEqual(idProduct);
         expect(response.name).toBe('Jugos de frutas natural');
         done();
-      }
+      },
     };
     getProductById(req, resp);
-  })
+  });
 
   it('Deberia de poder obtener un error 404 si no existe el producto', (done) => {
     const req = {
       params: {
         productId: '5dc99b50c5841032222222a2',
-      }
+      },
     };
     const next = (code) => {
       expect(code).toBe(404);
       done();
     };
     getProductById(req, {}, next);
-  })
+  });
 
   it('Deberia obtener un error 404 si el ID no es valido', (done) => {
     const req = {
       params: {
-        productId: 'fakeid'
+        productId: 'fakeid',
       },
-    }
+    };
     const next = (code) => {
       expect(code).toBe(404);
       done();
     };
     getProductById(req, {}, next);
-  })
+  });
 });
 
 describe('addProduct', () => {
   beforeAll(async () => {
     await db();
-  })
+  });
 
   afterAll(async () => {
     await (await db()).collection('products').deleteMany({});
     await db().close();
-  })
+  });
 
   it('Deberia de poder agregar un producto', (done) => {
     const req = {
@@ -163,10 +163,10 @@ describe('addProduct', () => {
         expect(response.name).toBe('Hamburguesa simple');
         expect(response.price).toBe(10);
         done();
-      }
-    }
+      },
+    };
     addProduct(req, resp);
-  })
+  });
 
   it('Deberia de poder agregar un producto si no envia image', (done) => {
     const req = {
@@ -181,10 +181,10 @@ describe('addProduct', () => {
         expect(response.name).toBe('Hamburguesa doble');
         expect(response.price).toBe(15);
         done();
-      }
-    }
+      },
+    };
     addProduct(req, resp);
-  })
+  });
 
   it('Deberia de poder agregar un producto si no envia type', (done) => {
     const req = {
@@ -199,10 +199,10 @@ describe('addProduct', () => {
         expect(response.name).toBe('Cafe americano');
         expect(response.price).toBe(7);
         done();
-      }
-    }
+      },
+    };
     addProduct(req, resp);
-  })
+  });
 
   it('Deberia de mostrar un error 400 si no se envia name', (done) => {
     const req = {
@@ -211,14 +211,14 @@ describe('addProduct', () => {
         image: 'http://burger-simple.jpg',
         type: 'hamburguesas',
         dateEntry: new Date(),
-      }
-    }
+      },
+    };
     const next = (code) => {
       expect(code).toBe(400);
       done();
-    }
+    };
     addProduct(req, {}, next);
-  })
+  });
 
   it('Deberia de mostrar un error 400 si no se envia price', (done) => {
     const req = {
@@ -227,15 +227,15 @@ describe('addProduct', () => {
         image: 'http://burger-simple.jpg',
         type: 'hamburguesas',
         dateEntry: new Date(),
-      }
-    }
+      },
+    };
     const next = (code) => {
       expect(code).toBe(400);
       done();
-    }
+    };
     addProduct(req, {}, next);
-  })
-})
+  });
+});
 
 describe('deleteProduct', () => {
   let products;
@@ -256,58 +256,58 @@ describe('deleteProduct', () => {
         image: 'http://jugo.img',
         type: 'bebidas',
         dateEntry: new Date(),
-      }
+      },
     ]);
-  })
+  });
 
   afterAll(async () => {
     await (await db()).collection('products').deleteMany({});
     await db().close();
-  })
+  });
 
   it('Deberia de poder eliminar un producto por su id', (done) => {
     const productId = products.insertedIds['0'];
     const req = {
       params: {
         productId,
-      }
+      },
     };
     const resp = {
       send: (response) => {
         expect(response._id).toEqual(productId);
         expect(response.name).toBe('Hamburguesa simple');
         done();
-      }
-    }
+      },
+    };
     deleteProduct(req, resp);
-  })
+  });
 
   it('Deberia de mostrar un error 404 si el producto no existe', (done) => {
     const req = {
       params: {
         productId: '5ca99b50c5841032222222a2',
-      }
+      },
     };
     const next = (code) => {
       expect(code).toBe(404);
       done();
     };
     deleteProduct(req, {}, next);
-  })
+  });
 
   it('Deberia obtener un error 404 si el ID no es valido', (done) => {
     const req = {
       params: {
-        productId: 'fakeid'
+        productId: 'fakeid',
       },
-    }
+    };
     const next = (code) => {
       expect(code).toBe(404);
       done();
     };
     deleteProduct(req, {}, next);
-  })
-})
+  });
+});
 
 describe('updateProduct', () => {
   let products;
@@ -321,43 +321,43 @@ describe('updateProduct', () => {
         image: 'http://jugo.img',
         type: 'bebidas',
         dateEntry: new Date(),
-      }
+      },
     ]);
-  })
+  });
 
   afterAll(async () => {
     await (await db()).collection('products').deleteMany({});
     await db().close();
-  })
+  });
 
   it('Deberia de poder actualizar un producto por su id', (done) => {
-    const productId = products.insertedIds['0'];;
+    const productId = products.insertedIds['0'];
     const req = {
       params: {
         productId,
       },
       body: {
-        price: 8
-      }
-    }
+        price: 8,
+      },
+    };
 
     const resp = {
       send: (response) => {
         expect(response._id).toEqual(productId);
         expect(response.price).toBe(8);
         done();
-      }
-    }
+      },
+    };
 
     updateProduct(req, resp);
-  })
+  });
 
   it('Deberia de mostar un error 400 si no hay ninguna prop a modificar', (done) => {
     const req = {
       params: {
         productId: '5ca99b50c5841032222222a2',
       },
-      body: {}
+      body: {},
     };
     const next = (code) => {
       expect(code).toBe(400);
@@ -365,7 +365,7 @@ describe('updateProduct', () => {
     };
 
     updateProduct(req, {}, next);
-  })
+  });
 
   it('Deberia de mostar un error 400 si el tipo de dato de price es diferente de number', (done) => {
     const req = {
@@ -373,8 +373,8 @@ describe('updateProduct', () => {
         productId: '5ca99b50c5841032222222a2',
       },
       body: {
-        price: '8'
-      }
+        price: '8',
+      },
     };
     const next = (code) => {
       expect(code).toBe(400);
@@ -382,7 +382,7 @@ describe('updateProduct', () => {
     };
 
     updateProduct(req, {}, next);
-  })
+  });
 
   it('Deberia de mostrar un error 404 si no existe el producto', (done) => {
     const req = {
@@ -391,7 +391,7 @@ describe('updateProduct', () => {
       },
       body: {
         price: 10,
-      }
+      },
     };
 
     const next = (code) => {
@@ -400,21 +400,21 @@ describe('updateProduct', () => {
     };
 
     updateProduct(req, {}, next);
-  })
+  });
 
   it('Deberia obtener un error 404 si el ID no es valido', (done) => {
     const req = {
       params: {
-        productId: 'fakeid'
+        productId: 'fakeid',
       },
       body: {
         price: 7,
-      }
-    }
+      },
+    };
     const next = (code) => {
       expect(code).toBe(404);
       done();
     };
     updateProduct(req, {}, next);
-  })
-})
+  });
+});

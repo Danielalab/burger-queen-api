@@ -6,8 +6,8 @@ describe('getPagination', () => {
       collectionName: 'users',
       numberOfDocuments: 45,
       limit: 10,
-      currentPage: 2
-    }
+      currentPage: 2,
+    };
     const result = getPagination(input);
     expect(result).toEqual({
       first: '</users?limit=10&page=1>; rel="first"',

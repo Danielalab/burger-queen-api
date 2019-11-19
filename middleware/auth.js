@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
 const db = require('../libs/connectdb');
 
-module.exports = secret => async (req, resp, next) => {
+module.exports = (secret) => async (req, resp, next) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
@@ -32,19 +32,19 @@ module.exports = secret => async (req, resp, next) => {
 };
 
 
-module.exports.isAuthenticated = req => (
+module.exports.isAuthenticated = (req) => (
   // TODO: decidir por la informacion del request si la usuaria esta autenticada
   req.headers.authenticatedUser
 );
 
 
-module.exports.isAdmin = req => (
+module.exports.isAdmin = (req) => (
   // TODO: decidir por la informacion del request si la usuaria es admin
   req.headers.authenticatedUser.roles.admin
 );
 
 
-module.exports.isTheUserToConsult = req => (
+module.exports.isTheUserToConsult = (req) => (
   req.headers.authenticatedUser._id.toString() === req.params.uid
   || req.headers.authenticatedUser.email === req.params.uid
 );

@@ -2,7 +2,7 @@ const {
   requireAuth,
 } = require('../middleware/auth');
 
-const  {
+const {
   getOrders,
   getOrderById,
   addOrder,

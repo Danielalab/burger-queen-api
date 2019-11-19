@@ -17,7 +17,7 @@ const getUsers = async (req, resp) => {
     collectionName: 'users',
     numberOfDocuments,
     limit,
-    currentPage: page
+    currentPage: page,
   });
   resp.set('link', `${link.first}, ${link.prev}, ${link.next}, ${link.last}`);
   resp.send(users);

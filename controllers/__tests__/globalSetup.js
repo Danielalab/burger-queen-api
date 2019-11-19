@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
 module.exports = () => {
@@ -7,5 +8,5 @@ module.exports = () => {
   return mongod.getConnectionString()
     .then((uri) => {
       process.env.DB_URL = uri;
-    })
-}
+    });
+};

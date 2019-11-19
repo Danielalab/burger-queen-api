@@ -44,7 +44,7 @@ const fetch = (url, opts = {}) => nodeFetch(`${baseUrl}${url}`, {
 });
 
 
-const fetchWithAuth = token => (url, opts = {}) => fetch(url, {
+const fetchWithAuth = (token) => (url, opts = {}) => fetch(url, {
   ...opts,
   headers: {
     ...opts.headers,
@@ -94,7 +94,7 @@ const waitForServerToBeReady = (retries = 10) => new Promise((resolve, reject) =
 
   setTimeout(() => {
     fetch('/')
-      .then(resp => (
+      .then((resp) => (
         (resp.status !== 200)
           ? reject(new Error(`GET / responded with ${resp.status}`))
           : resolve()

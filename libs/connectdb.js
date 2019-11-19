@@ -1,6 +1,7 @@
 const mongo = require('mongodb').MongoClient;
 
 const { dbUrl } = require('../config');
+
 let db;
 
 module.exports = async () => {

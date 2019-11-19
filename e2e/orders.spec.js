@@ -8,12 +8,12 @@ const {
 describe('POST /orders', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders', { method: 'POST' })
-      .then(resp => expect(resp.status).toBe(401))
+      .then((resp) => expect(resp.status).toBe(401))
   ));
 
   it('should fail with 400 when bad props', () => (
     fetchAsTestUser('/orders', { method: 'POST', body: {} })
-      .then(resp => expect(resp.status).toBe(400))
+      .then((resp) => expect(resp.status).toBe(400))
   ));
 
   it('should fail with 400 when empty items', () => (
@@ -93,7 +93,7 @@ describe('POST /orders', () => {
 describe('GET /orders', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders')
-      .then(resp => expect(resp.status).toBe(401))
+      .then((resp) => expect(resp.status).toBe(401))
   ));
 
   it('should get orders as user', () => (
@@ -193,12 +193,12 @@ describe('GET /orders', () => {
 describe('GET /orders/:orderid', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders/xxx')
-      .then(resp => expect(resp.status).toBe(401))
+      .then((resp) => expect(resp.status).toBe(401))
   ));
 
   it('should fail with 404 when admin and not found', () => (
     fetchAsAdmin('/orders/xxx')
-      .then(resp => expect(resp.status).toBe(404))
+      .then((resp) => expect(resp.status).toBe(404))
   ));
 
   it('should get order as user', () => (
@@ -222,7 +222,7 @@ describe('GET /orders/:orderid', () => {
         expect(resp.status).toBe(200);
         return resp.json();
       })
-      .then(json => fetchAsTestUser(`/orders/${json._id}`))
+      .then((json) => fetchAsTestUser(`/orders/${json._id}`))
       .then((resp) => {
         expect(resp.status).toBe(200);
         return resp.json();
@@ -255,7 +255,7 @@ describe('GET /orders/:orderid', () => {
         expect(resp.status).toBe(200);
         return resp.json();
       })
-      .then(json => fetchAsAdmin(`/orders/${json._id}`))
+      .then((json) => fetchAsAdmin(`/orders/${json._id}`))
       .then((resp) => {
         expect(resp.status).toBe(200);
         return resp.json();
@@ -272,7 +272,7 @@ describe('GET /orders/:orderid', () => {
 describe('PUT /orders/:orderid', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders/xxx', { method: 'PUT' })
-      .then(resp => expect(resp.status).toBe(401))
+      .then((resp) => expect(resp.status).toBe(401))
   ));
 
   it('should fail with 404 when not found', () => (
@@ -280,7 +280,7 @@ describe('PUT /orders/:orderid', () => {
       method: 'PUT',
       body: { status: 'canceled' },
     })
-      .then(resp => expect(resp.status).toBe(404))
+      .then((resp) => expect(resp.status).toBe(404))
   ));
 
   it('should fail with 400 when bad props', () => (
@@ -304,10 +304,10 @@ describe('PUT /orders/:orderid', () => {
         expect(resp.status).toBe(200);
         return resp.json();
       })
-      .then(json => fetchAsTestUser(`/orders/${json._id}`))
-      .then(resp => resp.json())
-      .then(json => fetchAsAdmin(`/orders/${json._id}`, { method: 'PUT' }))
-      .then(resp => expect(resp.status).toBe(400))
+      .then((json) => fetchAsTestUser(`/orders/${json._id}`))
+      .then((resp) => resp.json())
+      .then((json) => fetchAsAdmin(`/orders/${json._id}`, { method: 'PUT' }))
+      .then((resp) => expect(resp.status).toBe(400))
   ));
 
   it('should fail with 400 when bad status', () => (
@@ -331,11 +331,11 @@ describe('PUT /orders/:orderid', () => {
         expect(resp.status).toBe(200);
         return resp.json();
       })
-      .then(json => fetchAsAdmin(`/orders/${json._id}`, {
+      .then((json) => fetchAsAdmin(`/orders/${json._id}`, {
         method: 'PUT',
         body: { status: 'oh yeah!' },
       }))
-      .then(resp => expect(resp.status).toBe(400))
+      .then((resp) => expect(resp.status).toBe(400))
   ));
 
   it('should update order (set status to preparing)', () => (
@@ -370,7 +370,7 @@ describe('PUT /orders/:orderid', () => {
         expect(resp.status).toBe(200);
         return resp.json();
       })
-      .then(json => expect(json.status).toBe('preparing'))
+      .then((json) => expect(json.status).toBe('preparing'))
   ));
 
   it('should update order (set status to delivering)', () => (
@@ -405,7 +405,7 @@ describe('PUT /orders/:orderid', () => {
         expect(resp.status).toBe(200);
         return resp.json();
       })
-      .then(json => expect(json.status).toBe('delivering'))
+      .then((json) => expect(json.status).toBe('delivering'))
   ));
 
   it('should update order (set status to delivered)', () => (
@@ -451,12 +451,12 @@ describe('PUT /orders/:orderid', () => {
 describe('DELETE /orders/:orderid', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders/xxx', { method: 'DELETE' })
-      .then(resp => expect(resp.status).toBe(401))
+      .then((resp) => expect(resp.status).toBe(401))
   ));
 
   it('should fail with 404 when not found', () => (
     fetchAsAdmin('/orders/xxx', { method: 'DELETE' })
-      .then(resp => expect(resp.status).toBe(404))
+      .then((resp) => expect(resp.status).toBe(404))
   ));
 
   it('should delete other order as admin', () => (
@@ -482,12 +482,12 @@ describe('DELETE /orders/:orderid', () => {
       })
       .then(
         ({ _id }) => fetchAsAdmin(`/orders/${_id}`, { method: 'DELETE' })
-          .then(resp => ({ resp, _id })),
+          .then((resp) => ({ resp, _id })),
       )
       .then(({ resp, _id }) => {
         expect(resp.status).toBe(200);
         return fetchAsAdmin(`/orders/${_id}`);
       })
-      .then(resp => expect(resp.status).toBe(404))
+      .then((resp) => expect(resp.status).toBe(404))
   ));
 });

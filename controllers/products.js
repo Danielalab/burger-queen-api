@@ -12,8 +12,11 @@ const getProducts = async (req, resp, next) => {
       .limit(parseInt(limit, 10))
       .skip(numberOfDocumentsToSkip)
       .toArray())
-      .map(({ _id, name, price, image, type, dateEntry }) =>
-        ({_id, name, price, image, type, dateEntry}));
+      .map(({
+        _id, name, price, image, type, dateEntry,
+      }) => ({
+        _id, name, price, image, type, dateEntry,
+      }));
     const link = getPagination({
       collectionName: 'products',
       numberOfDocuments,
@@ -23,16 +26,16 @@ const getProducts = async (req, resp, next) => {
     resp.set('link', `${link.first}, ${link.prev}, ${link.next}, ${link.last}`);
     resp.send(products);
   } catch (error) {
-    next(500)
+    next(500);
   }
-}
+};
 
 const getProductById = async (req, resp, next) => {
   const { productId } = req.params;
   const collectionProducts = (await db()).collection('products');
   let query;
   try {
-    query = { _id: new ObjectId(productId) }
+    query = { _id: new ObjectId(productId) };
   } catch (error) {
     return next(404);
   }
@@ -41,10 +44,12 @@ const getProductById = async (req, resp, next) => {
     return next(404);
   }
   resp.send(product);
-}
+};
 
 const addProduct = async (req, resp, next) => {
-  const { name, price, image = '', type = '' } = req.body;
+  const {
+    name, price, image = '', type = '',
+  } = req.body;
   const collectionProducts = (await db()).collection('products');
   if (!name || !price) {
     return next(400);
@@ -53,18 +58,18 @@ const addProduct = async (req, resp, next) => {
     name,
     price,
     image,
-    type
+    type,
   })).insertedId;
-  const product = await collectionProducts.findOne({ _id: new ObjectId(productId) })
+  const product = await collectionProducts.findOne({ _id: new ObjectId(productId) });
   resp.send(product);
-}
+};
 
 const deleteProduct = async (req, resp, next) => {
   const { productId } = req.params;
   const collectionProducts = (await db()).collection('products');
   let query;
   try {
-    query = { _id: new ObjectId(productId) }
+    query = { _id: new ObjectId(productId) };
   } catch (error) {
     return next(404);
   }
@@ -74,11 +79,13 @@ const deleteProduct = async (req, resp, next) => {
   }
   await collectionProducts.deleteOne(query);
   resp.send(product);
-}
+};
 
 const updateProduct = async (req, resp, next) => {
   const { productId } = req.params;
-  const { name, price, image, type } = req.body;
+  const {
+    name, price, image, type,
+  } = req.body;
   if (!name && !price && !image && !type) {
     return next(400);
   }
@@ -87,7 +94,7 @@ const updateProduct = async (req, resp, next) => {
   }
   let query;
   try {
-    query = { _id: new ObjectId(productId) }
+    query = { _id: new ObjectId(productId) };
   } catch (error) {
     return next(404);
   }
@@ -103,18 +110,18 @@ const updateProduct = async (req, resp, next) => {
         name: name || product.name,
         price: price || product.price,
         type: type || product.type,
-        image: image || product.image
-      }
-    }
+        image: image || product.image,
+      },
+    },
   );
   const updatedProduct = await collectionProducts.findOne(query);
   resp.send(updatedProduct);
-}
+};
 
 module.exports = {
   getProducts,
   getProductById,
   addProduct,
   deleteProduct,
-  updateProduct
-}
+  updateProduct,
+};
