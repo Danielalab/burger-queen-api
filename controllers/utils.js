@@ -38,7 +38,7 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) =>
             in: {
               $concatArrays: ['$$value', [
                 {
-                  product: { $arrayElemAt: ['$product-data', { $indexOfArray: ['$products', { $eq: ['$products.productId', '$$this.productId'] }] }] },
+                  product: { $arrayElemAt: ['$product-data', { $indexOfArray: ['$products', '$$this'] }] },
                   qty: '$$this.qty',
                 },
               ]],
