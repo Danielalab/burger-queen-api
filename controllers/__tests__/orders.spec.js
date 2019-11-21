@@ -206,7 +206,7 @@ describe('addOrder', () => {
     await db().close();
   });
 
-  it('Deberia de poder agregar una order', (done) => {
+  it.only('Deberia de poder agregar una order', (done) => {
     const productsIds = products.insertedIds;
     const req = {
       body: {
@@ -228,6 +228,7 @@ describe('addOrder', () => {
 
     const resp = {
       send: (response) => {
+        console.log(response.products);
         expect(response.userId).toBe('test123456');
         expect(response.client).toBe('Ana');
         expect(response.products.length).toBe(2);

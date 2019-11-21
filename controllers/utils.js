@@ -18,32 +18,8 @@ const getPagination = ({
 };
 
 const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) => {
-  const propsOrder = {
-    _id: '$_id',
-    userId: { $first: '$userId' },
-    client: { $first: '$client' },
-    products: { $push: '$products.data' },
-    status: { $first: '$status' },
-    dateEntry: { $first: '$dateEntry' },
-    dateProcessed: { $first: '$dateProcessed' },
-  };
-
-  const cb = (order) => (
-    order.dateProcessed !== null
-      ? { ...order }
-      : {
-        _id: order._id,
-        userId: order.userId,
-        client: order.client,
-        products: order.products,
-        status: order.status,
-        dateEntry: order.dateEntry,
-      }
-  );
-
-  const specificOrderData = await (await (await collectionOrders.aggregate([
+  const specificOrderData = await collectionOrders.aggregate([
     ...queries,
-    { $unwind: '$products' },
     {
       $lookup:
         {
@@ -53,12 +29,37 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) =>
           as: 'product-data',
         },
     },
-    { $unwind: '$product-data' },
-    { $addFields: { 'products.data.product': '$product-data' } },
-    { $addFields: { 'products.data.qty': '$products.qty' } },
-    { $group: propsOrder },
-    { $sort: { _id: 1 } },
-  ])).map(cb)).toArray();
+    {
+      $addFields: {
+        products: {
+          $reduce: {
+            input: '$products',
+            initialValue: [],
+            in: {
+              $concatArrays: ['$$value', [
+                {
+                  product: { $arrayElemAt: ['$product-data', { $indexOfArray: ['$products', { $eq: ['$products.productId', '$$this.productId'] }] }] },
+                  qty: '$$this.qty',
+                },
+              ]],
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        userId: 1,
+        client: 1,
+        products: 1,
+        status: 1,
+        dateEntry: 1,
+        dateProcessed: 1,
+      },
+    },
+  ]).toArray();
+  console.log(JSON.stringify(specificOrderData, null, 4));
 
   return specificOrderData;
 };
