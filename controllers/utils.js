@@ -17,8 +17,8 @@ const getPagination = ({
   };
 };
 
-const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) => {
-  const specificOrderData = await collectionOrders.aggregate([
+const getDataOfEachProductOfTheOrder = (collectionOrders, queries = []) => (
+  collectionOrders.aggregate([
     ...queries,
     {
       $lookup:
@@ -32,16 +32,21 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) =>
     {
       $addFields: {
         products: {
-          $reduce: {
+          $map: {
             input: '$products',
-            initialValue: [],
+            as: 'orig',
             in: {
-              $concatArrays: ['$$value', [
-                {
-                  product: { $arrayElemAt: ['$product-data', { $indexOfArray: ['$products', '$$this'] }] },
-                  qty: '$$this.qty',
+              $reduce: {
+                input: '$product-data',
+                initialValue: null,
+                in: {
+                  $cond: {
+                    if: { $eq: ['$$orig.productId', '$$this._id'] },
+                    then: { product: '$$this', qty: '$$orig.qty' },
+                    else: '$$value',
+                  },
                 },
-              ]],
+              },
             },
           },
         },
@@ -58,11 +63,7 @@ const getDataOfEachProductOfTheOrder = async (collectionOrders, queries = []) =>
         dateProcessed: 1,
       },
     },
-  ]).toArray();
-  console.log(JSON.stringify(specificOrderData, null, 4));
-
-  return specificOrderData;
-};
+  ]).toArray());
 
 module.exports = {
   isEmailValid,

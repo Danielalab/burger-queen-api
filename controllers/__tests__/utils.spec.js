@@ -19,7 +19,7 @@ describe('getPagination', () => {
   });
 });
 
-const insertDocumentsToCollection = async (nameCollection, data) => (await db())
+/* const insertDocumentsToCollection = async (nameCollection, data) => (await db())
   .collection(nameCollection).insertMany(data);
 
 describe.only('getDataOfEachProductOfTheOrder', () => {
@@ -90,4 +90,4 @@ describe.only('getDataOfEachProductOfTheOrder', () => {
         done();
       });
   });
-});
+}); */
