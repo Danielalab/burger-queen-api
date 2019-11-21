@@ -1,4 +1,6 @@
 const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
 const config = require('./config');
 const authMiddleware = require('./middleware/auth');
 const errorHandler = require('./middleware/error');
@@ -19,6 +21,10 @@ const init = async () => {
       app.set('config', config);
       app.set('pkg', pkg);
 
+      // configura cors
+      app.use(cors());
+
+      app.use(helmet());
       // parse application/x-www-form-urlencoded
       // Va a entender datos sencillos (texto) de un formulario
       app.use(express.urlencoded({ extended: false }));
