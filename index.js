@@ -8,7 +8,7 @@ const routes = require('./routes');
 const pkg = require('./package.json');
 const connectToMongoDB = require('./libs/connectdb');
 
-const { port, dbUrl, secret } = config;
+const { port, secret } = config;
 const app = express();
 
 // TODO: Conexión a la BD en mogodb ver promesas
@@ -16,7 +16,7 @@ const app = express();
 // y se pierde el valor de la bd
 
 const init = async () => {
-  connectToMongoDB(dbUrl)
+  connectToMongoDB()
     .then(() => {
       app.set('config', config);
       app.set('pkg', pkg);
