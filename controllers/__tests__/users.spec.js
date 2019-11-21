@@ -21,8 +21,8 @@ describe('addUsers', () => {
   it('Deberia de poder agregar un usuario', (done) => {
     const req = {
       body: {
-        email: 'test@test',
-        password: 'test1test',
+        email: 'test@test.com',
+        password: 'testtest',
         roles: {
           admin: false,
         },
@@ -31,8 +31,8 @@ describe('addUsers', () => {
 
     const resp = {
       send: (response) => {
-        expect(response.length).toEqual(1);
-        expect(response[0].email).toBe('test@test');
+        expect(response.email).toBe('test@test.com');
+        expect(response.roles.admin).toBe(false);
         done();
       },
     };
@@ -79,7 +79,7 @@ describe('addUsers', () => {
   it('Deberia de mostrar un error 403 si existe el usuario', (done) => {
     const req = {
       body: {
-        email: 'test@test',
+        email: 'test@test.com',
         password: 'test1test',
       },
     };

@@ -19,7 +19,7 @@ describe('addUser', () => {
   it('Deberia de mostrar un error 500 si existe un error con la DB', async (done) => {
     const req = {
       body: {
-        email: 'test@error',
+        email: 'test@error.la',
         password: 'test1test',
       },
     };
