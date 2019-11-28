@@ -1,5 +1,30 @@
-const { getPagination, getDataOfEachProductOfTheOrder } = require('../utils');
+const {
+  getPagination,
+  getDataOfEachProductOfTheOrder,
+  isEmailValid,
+  isPasswordValid,
+} = require('../utils');
 const db = require('../../libs/connectdb');
+
+describe('isEmailValid', () => {
+  it('Deberia de retornar "true" si es un email válido', () => {
+    expect(isEmailValid('test@test.com')).toBe(true);
+  });
+
+  it('Deberia de retornar "false" si es un email inválido', () => {
+    expect(isEmailValid('test@test')).toBe(false);
+  });
+});
+
+describe('isPasswordValid', () => {
+  it('Deberia de retornar "true" si es un password válido', () => {
+    expect(isPasswordValid('testpassword')).toBe(true);
+  });
+
+  it('Deberia de retornar "false" si es un password inválido', () => {
+    expect(isPasswordValid('tes')).toBe(false);
+  });
+});
 
 describe('getPagination', () => {
   it('Deberia retornar un objeto con los links a first, prev, next y last', () => {
@@ -15,6 +40,22 @@ describe('getPagination', () => {
       prev: '</users?limit=10&page=1>; rel="prev"',
       next: '</users?limit=10&page=3>; rel="next"',
       last: '</users?limit=10&page=5>; rel="last"',
+    });
+  });
+
+  it('Deberia retornar un objeto con los links a first, prev, next y last', () => {
+    const input = {
+      collectionName: 'users',
+      numberOfDocuments: 8,
+      limit: 10,
+      currentPage: 1,
+    };
+    const result = getPagination(input);
+    expect(result).toEqual({
+      first: '</users?limit=10&page=1>; rel="first"',
+      prev: '</users?limit=10&page=1>; rel="prev"',
+      next: '</users?limit=10&page=1>; rel="next"',
+      last: '</users?limit=10&page=1>; rel="last"',
     });
   });
 });
