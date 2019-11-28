@@ -19,10 +19,10 @@ describe('getPagination', () => {
   });
 });
 
-/* const insertDocumentsToCollection = async (nameCollection, data) => (await db())
+const insertDocumentsToCollection = async (nameCollection, data) => (await db())
   .collection(nameCollection).insertMany(data);
 
-describe.only('getDataOfEachProductOfTheOrder', () => {
+describe('getDataOfEachProductOfTheOrder', () => {
   let productsIds;
   beforeAll(async () => {
     await db();
@@ -82,12 +82,14 @@ describe.only('getDataOfEachProductOfTheOrder', () => {
     await db().close();
   });
 
-  it.only('Deberia de obtener una orden detallada con la informacion de cada producto', async (done) => {
+  it('Deberia de obtener una orden detallada con la informacion de cada producto', async (done) => {
     const colectionOrders = (await db()).collection('orders');
     getDataOfEachProductOfTheOrder(colectionOrders)
       .then((response) => {
-        console.log(response);
+        expect(response[0].products.length).toBe(2);
+        expect(response[0].products[0].product.name).toBe('Cafe americano');
+        expect(response[0].products[0].qty).toBe(2);
         done();
       });
   });
-}); */
+});
