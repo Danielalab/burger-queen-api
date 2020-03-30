@@ -6,7 +6,7 @@ let db;
 
 module.exports = async () => {
   if (!db) {
-    const client = await mongo.connect(dbUrl, { useNewUrlParser: true });
+    const client = await mongo.connect(dbUrl, { useUnifiedTopology: true });
     db = client.db('burger-queen');
   }
   return db;
