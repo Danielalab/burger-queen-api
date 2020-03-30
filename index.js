@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const fs = require('fs');
-const https = require('https');
 const config = require('./config');
 const authMiddleware = require('./middleware/auth');
 const errorHandler = require('./middleware/error');
@@ -42,10 +40,7 @@ const init = async () => {
 
         app.use(errorHandler);
 
-        https.createServer({
-          key: fs.readFileSync('server.key'),
-          cert: fs.readFileSync('server.cert'),
-        }, app)
+        app
           .listen(port, () => {
             console.info(`App listening on port ${port}`);
           });
